@@ -1,35 +1,46 @@
-
-
 const http = require('http');
-const fs = require('fs');
 const url = require('url');
+const fs = require('fs');
 
 const server = http.createServer((req, res) => {
-  const { pathname } = url.parse(req.url);
+  const parsedUrl = url.parse(req.url);
+  const pathname = parsedUrl.pathname;
 
-  if (pathname === '/') {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    fs.readFile('./index.html', (err, data) => {
+  // Log the request to the log.txt file
+  const logData = `${pathname} - ${new Date().toISOString()}\n`;
+  fs.appendFile('log.txt', logData, (err) => {
+    if (err) {
+      console.error(err);
+    }
+  });
+
+  if (pathname === '/documentation') {
+    // Serve documentation.html file
+    fs.readFile('documentation.html', (err, data) => {
       if (err) {
         console.error(err);
-        res.end();
+        res.writeHead(500, {'Content-Type': 'text/plain'});
+        res.end('Internal Server Error');
       } else {
-        res.write(data);
-        res.end();
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.end(data);
       }
     });
-  } else if (pathname === '/about') {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.write('This is the Movie Home page.');
-    res.end();
   } else {
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.write('404 Not Found');
-    res.end();
+    // Serve index.html file
+    fs.readFile('index.html', (err, data) => {
+      if (err) {
+        console.error(err);
+        res.writeHead(500, {'Content-Type': 'text/plain'});
+        res.end('Internal Server Error');
+      } else {
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.end(data);
+      }
+    });
   }
 });
 
 server.listen(8080, () => {
-  console.log('My first Node test server is running on Port 8080.');
+  console.log('Server running on port 8080');
 });
-
