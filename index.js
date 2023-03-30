@@ -4,6 +4,9 @@ const express = require('express');
 // create an instance of express
 const app = express();
 
+ // serve static files from the "public" folder
+ app.use(express.static(path.join(__dirname, 'public')));
+
 // define a route that returns a JSON object containing data about your top 10 movies
 app.get('/movies', (req, res) => {
   const movies = [
@@ -67,8 +70,7 @@ app.get('/', (req, res) => {
     res.send('These are my Favorite Movies!');
   });
 
-  // serve static files from the "public" folder
-app.use(express.static(path.join(__dirname, 'public')));
+ 
 
 // start the server
 app.listen(8080, () => {
