@@ -67,6 +67,9 @@ app.get('/', (req, res) => {
     res.send('These are my Favorite Movies!');
   });
 
+  // serve static files from the "public" folder
+app.use(express.static(path.join(__dirname, 'public')));
+
 // start the server
 app.listen(8080, () => {
   console.log('Server listens on port 8080');
