@@ -72,15 +72,15 @@ app.get('/', (req, res) => {
   });
 
   app.get('/error', (req, res, next) => {
-    const err = new Error('Something went wrong!');
-    err.status = 500;
+    const err = new Error('Something is Broken!');
+    err.status = 404;
     next(err);
   });
   
   // error-handling middleware function that logs all application-level errors
   app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(err.status || 500);
+    res.status(err.status || 404);
     res.send('An error occurred!');
   });
 
