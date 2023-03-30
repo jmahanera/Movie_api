@@ -1,5 +1,6 @@
 // import the required modules
 const express = require('express');
+const path = require('path');
 
 // create an instance of express
 const app = express();
