@@ -2,14 +2,24 @@ const express = require('express');
 const app = express();
 
 
-const http = require('http');
+const express = require('express'),
+  morgan = require('morgan');
 
-http.createServer((request, response) => {
-  response.writeHead(200, {'Content-Type': 'text/plain'});
-  response.end('Welcome to my book club!\n');
-}).listen(8080);
+const app = express();
 
-console.log('My first Node test server is running on Port 8080.');
+app.use(morgan('common'));
+
+app.get('/', (req, res) => {
+  res.send('Welcome to my app!');
+});
+
+app.get('/secreturl', (req, res) => {
+  res.send('This is a secret url with super top-secret content.');
+});
+
+app.listen(8080, () => {
+  console.log('Your app is listening on port 8080.');
+});
 
 
 
