@@ -1,11 +1,12 @@
 // import the required modules
 const express = require('express');
 const path = require('path');
-
+const morgan = require('morgan');
 // create an instance of express
 const app = express();
 
-
+// use the "morgan" middleware function to log all requests
+app.use(morgan('combined'));
 
 // define a route that returns a JSON object containing data about your top 10 movies
 app.get('/movies', (req, res) => {
