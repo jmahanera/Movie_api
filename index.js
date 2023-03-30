@@ -71,6 +71,19 @@ app.get('/', (req, res) => {
     res.send('These are my Favorite Movies!');
   });
 
+  app.get('/error', (req, res, next) => {
+    const err = new Error('Something went wrong!');
+    err.status = 500;
+    next(err);
+  });
+  
+  // error-handling middleware function that logs all application-level errors
+  app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(err.status || 500);
+    res.send('An error occurred!');
+  });
+
    // serve static files from the "public" folder
  app.use(express.static(path.join(__dirname, 'public')));
 
