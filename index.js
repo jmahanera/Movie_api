@@ -62,6 +62,11 @@ app.get('/movies', (req, res) => {
   res.json(movies);
 });
 
+// define a route that returns a default textual response
+app.get('/', (req, res) => {
+    res.send('These are my Favorite Movies!');
+  });
+
 // start the server
 app.listen(8080, () => {
   console.log('Server listens on port 8080');
