@@ -71,7 +71,7 @@ app.get('/', (req, res) => {
   
 });
 
-app.get('/failure', (req, res, next) => {
+app.get('/failure loading', (req, res, next) => {
   
 });
 
