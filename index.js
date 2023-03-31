@@ -19,15 +19,18 @@ function requestLogger(req, res, next) {
   const timestamp = new Date().toISOString();
   const logLine = `${timestamp} ${method} ${url} ${JSON.stringify(headers)}\n`;
 
+
   // write the log line to the log file
   logStream.write(logLine);
 
   next();
 }
 
+// use the "morgan" middleware function to log all requests to the console and the log file
+app.use(morgan('combined', { stream: logStream }));
+
 // use the custom requestLogger middleware to log requests to the file
 app.use(requestLogger);
-
 
 // define a route that returns a JSON object containing data about your top 10 movies
 app.get('/movies', (req, res) => {
