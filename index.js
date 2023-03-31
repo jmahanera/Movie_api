@@ -1,12 +1,18 @@
 // import the required modules
-const express = require('express');
 const path = require('path');
-const morgan = require('morgan');
-// create an instance of express
-const app = express();
+const express = require('express'),
+  morgan = require('morgan'),
+  fs = require('fs'), // import built in node modules fs and path 
+  path = require('path');
 
-// use the "morgan" middleware function to log all requests
-app.use(morgan('combined'));
+const app = express();
+// create a write stream (in append mode)
+// a ‘log.txt’ file is created in root directory
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {flags: 'a'})
+
+// setup the logger
+app.use(morgan('combined', {stream: accessLogStream}));
+
 
 // define a route that returns a JSON object containing data about your top 10 movies
 app.get('/movies', (req, res) => {
