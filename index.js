@@ -68,16 +68,18 @@ app.get('/movies', (req, res) => {
 
 // define a route that returns a default textual response
 app.get('/', (req, res) => {
-  
+  res.send('Hello, There!');
 });
 
-app.get('/failure loading', (req, res, next) => {
-  
+app.get('/failure', (req, res, next) => {
+  const error = new Error('Failure loading');
+  next(error);
 });
 
 // error-handling middleware function that logs all application-level errors
 app.use((err, req, res, next) => {
-  
+  console.error(err);
+  res.status(500).send('Something went wrong!');
 });
 
 // serve static files from the "public" folder
@@ -87,9 +89,3 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.listen(8080, () => {
   console.log('Server listens on port 8080');
 });
-
-
-
-
-
-
