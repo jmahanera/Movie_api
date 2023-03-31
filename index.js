@@ -71,7 +71,7 @@ app.get('/', (req, res) => {
   
 });
 
-app.get('/failed to load', (req, res, next) => {
+app.get('/failure', (req, res, next) => {
   
 });
 
