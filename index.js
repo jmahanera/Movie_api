@@ -10,6 +10,9 @@ const app = express();
 // create a write stream to the log file
 const logStream = fs.createWriteStream('requests.log', { flags: 'a' });
 
+// use the "morgan" middleware function to log all requests to the console and the log file
+app.use(morgan('combined'));
+
 // create a middleware function to log requests
 function requestLogger(req, res, next) {
   const { method, url, headers } = req;
@@ -25,8 +28,6 @@ function requestLogger(req, res, next) {
 // use the custom requestLogger middleware to log requests to the file
 app.use(requestLogger);
 
-// use the "morgan" middleware function to log all requests to the console and the log file
-app.use(morgan('combined', { stream: logStream }));
 
 // define a route that returns a JSON object containing data about your top 10 movies
 app.get('/movies', (req, res) => {
