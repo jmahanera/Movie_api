@@ -4,6 +4,30 @@ const path = require('path');
 const morgan = require('morgan');
 // create an instance of express
 const app = express();
+const fs = require('fs');
+
+// create a write stream to the log file
+const logStream = fs.createWriteStream('requests.log', { flags: 'a' });
+
+// create a middleware function to log requests
+function requestLogger(req, res, next) {
+  const { method, url, headers } = req;
+  const timestamp = new Date().toISOString();
+  const logLine = `${timestamp} ${method} ${url} ${JSON.stringify(headers)}\n`;
+
+  // write the log line to the log file
+  logStream.write(logLine);
+
+  next();
+}
+
+// use the middleware function in your application
+const express = require('express');
+
+app.use(requestLogger);
+
+// your application code goes here...
+
 
 // use the "morgan" middleware function to log all requests
 app.use(morgan('combined'));
