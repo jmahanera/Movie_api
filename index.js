@@ -20,17 +20,10 @@ function requestLogger(req, res, next) {
 
   next();
 }
-
-// use the middleware function in your application
-const express = require('express');
-
-app.use(requestLogger);
-
-// your application code goes here...
-
-
 // use the "morgan" middleware function to log all requests
 app.use(morgan('combined'));
+
+app.use(requestLogger);
 
 // define a route that returns a JSON object containing data about your top 10 movies
 app.get('/movies', (req, res) => {
