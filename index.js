@@ -68,16 +68,16 @@ app.get('/movies', (req, res) => {
 
 // define a route that returns a default textual response
 app.get('/', (req, res) => {
-  // ... the same as before
+  
 });
 
-app.get('/error', (req, res, next) => {
-  // ... the same as before
+app.get('/failed to load', (req, res, next) => {
+  
 });
 
 // error-handling middleware function that logs all application-level errors
 app.use((err, req, res, next) => {
-  // ... the same as before
+  
 });
 
 // serve static files from the "public" folder
