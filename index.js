@@ -1,15 +1,14 @@
-// Import the required modules
+// import the required modules
 const express = require('express');
 const path = require('path');
 const morgan = require('morgan');
-
-// Create an instance of express
+// create an instance of express
 const app = express();
 
-// Use the "morgan" middleware function to log all requests
+// use the "morgan" middleware function to log all requests
 app.use(morgan('combined'));
 
-// Define a route that returns a JSON object containing data about your top 10 movies
+// define a route that returns a JSON object containing data about your top 10 movies
 app.get('/movies', (req, res) => {
   const movies = [
     {
@@ -67,29 +66,35 @@ app.get('/movies', (req, res) => {
   res.json(movies);
 });
 
-// Define a route that returns a default textual response
+// define a route that returns a default textual response
 app.get('/', (req, res) => {
-  res.send('These are my favorite movies!');
-});
+    res.send('These are my Favorite Movies!');
+  });
 
-// Define a route that throws an error
-app.get('/error', (req, res, next) => {
-  const err = new Error('Something is broken!');
-  err.status = 404;
-  next(err);
-});
+  app.get('/error', (req, res, next) => {
+    const err = new Error('Something is Broken!');
+    err.status = 404;
+    next(err);
+  });
+  
+  // error-handling middleware function that logs all application-level errors
+  app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(err.status || 40);
+    res.send('An error occurred!');
+  });
 
-// Error-handling middleware function that logs all application-level errors
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.status || 500);
-  res.send('An error occurred!');
-});
+   // serve static files from the "public" folder
+ app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve static files from the "public" folder
-app.use(express.static(path.join(__dirname, 'public')));
+ 
 
-// Start the server
+// start the server
 app.listen(8080, () => {
-  console.log('Server listening on port 8080');
+  console.log('Server listens on port 8080');
 });
+
+
+
+
+
