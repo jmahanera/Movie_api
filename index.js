@@ -283,6 +283,9 @@ app.use((err, req, res, next) => {
 // serve static files from the "public" folder
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+// Start the server
+const PORT = process.env.PORT || 8080;
 // start the server
 app.listen(8080, () => {
   console.log('Server listens on port 8080');
