@@ -66,6 +66,11 @@ app.get('/movies', (req, res) => {
       res.json(movies);
 });
 
+
+app.get('/movies', (req, res) => {
+   res.send('Successful GET request returning data on all Movies');
+ });
+
 // define a route that returns a default textual response
 app.get('/', (req, res) => {
   res.send('Hello, There!');
