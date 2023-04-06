@@ -1,74 +1,83 @@
+const app = express()
 const express = require('express');
 const path = require('path');
 const morgan = require('morgan');
 const fs = require('fs');
-const directors = require('./directors'); // assuming you have a file with the director data
-const app = express();
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+mongoose = require('mongoose')
 const logStream = fs.createWriteStream('requests.log', { flags: 'a' });
+
 // Import the database module and connect to the database
-const db = require('./db');
-db.connect();
-
-// Define an array of genre objects
-const genres = [
-  {
-    name: 'Thriller',
-    description: 'Thriller is a genre of fiction, having numerous, often overlapping subgenres. Thrillers are characterized and defined by the moods they elicit, giving viewers heightened feelings of suspense, excitement, surprise, anticipation and anxiety.'
-  },
-  {
-    name: 'Comedy',
-    description: 'Comedy is a genre of fiction characterized by humor and wit. It often takes a lighthearted and humorous approach to serious subjects and events, and may include satire, parody, farce, or other comedic devices.'
-  },
-  {
-    name: 'Drama',
-    description: 'Drama is a genre of fiction characterized by serious or significant events or conflicts, often involving characters who face difficult or challenging circumstances. It may include tragic or uplifting themes, and may be presented in a variety of formats, including stage plays, films, television shows, or novels.'
-  }
-];
-
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-// registration endpoint
-app.post('/register', (req, res) => {
-  const { name, email, password } = req.body;
-
-  // validate user input
-  if (!name || !email || !password) {
-    return res.status(400).json({ message: 'All fields are required.' });
-  }
-
-  // TODO: perform additional validation and save the user to the database
-
-  res.status(201).json({ message: 'User registered successfully.' });
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/myapp', { useNewUrlParser: true, useUnifiedTopology: true });
+const userSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  password: { type: String, required: true },
+  favorites: { type: [String], default: [] },
 });
 
-// example user data
-let users = [
-  { id: 1, username: 'user1' },
-  { id: 2, username: 'user2' },
-  { id: 3, username: 'user3' }
-];
+const User = mongoose.model('User', userSchema);
 
-// GET request to get user data
-app.get('/users/:id', (req, res) => {
-  const userId = parseInt(req.params.id);
-  const user = users.find(user => user.id === userId);
-  if (!user) {
-    return res.status(404).send('User not found');
-  }
-  res.send(user);
-});
+    // Define an array of genre objects
+    const genres = [
+      {
+        name: 'Thriller',
+        description: 'Thriller is a genre of fiction, having numerous, often overlapping subgenres. Thrillers are characterized and defined by the moods they elicit, giving viewers heightened feelings of suspense, excitement, surprise, anticipation and anxiety.'
+      },
+      {
+        name: 'Comedy',
+        description: 'Comedy is a genre of fiction characterized by humor and wit. It often takes a lighthearted and humorous approach to serious subjects and events, and may include satire, parody, farce, or other comedic devices.'
+      },
+      {
+        name: 'Drama',
+        description: 'Drama is a genre of fiction characterized by serious or significant events or conflicts, often involving characters who face difficult or challenging circumstances. It may include tragic or uplifting themes, and may be presented in a variety of formats, including stage plays, films, television shows, or novels.'
+      }
+    ];
 
-// PUT request to update user data
-app.put('/users/:id', (req, res) => {
-  const userId = parseInt(req.params.id);
-  const user = users.find(user => user.id === userId);
-  if (!user) {
-    return res.status(404).send('User not found');
-  }
-  user.username = req.body.username;
-  res.send(user);
+    app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(bodyParser.json());
+
+    const user = new User({ name, email, password });
+await user.save();
+
+ // registration endpoint
+    app.post('/register', (req, res) => {
+      const { name, email, password } = req.body;
+
+      
+
+      // validate user input
+      if (!name || !email || !password) {
+        return res.status(400).json({ message: 'All fields are required.' });
+      }
+
+      // TODO: perform additional validation and save the user to the database
+
+      res.status(201).json({ message: 'User registered successfully.' });
+    });
+
+
+    const userId = parseInt(req.params.id);
+    const users = await User.findOne({ id: userId });
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+    res.send(user);
+    
+
+    // PUT request to update user data
+    app.put('/users/:id', async (req, res) => {
+      const userId = parseInt(req.params.id);
+      const user = users.find(user => user.id === userId);
+      if (!user) {
+        return res.status(404).send('User not found');
+      }
+
+      user.username = req.body.username;
+      await user.save();
+      res.send(user);
+      
 });
 
 // Initialize an empty list of favorite movies
@@ -274,19 +283,13 @@ app.get('/failure', (req, res, next) => {
   next(error);
 });
 
-// error-handling middleware function that logs all application-level errors
+// Morgan middleware error handling function
 app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).send('Something went wrong!');
+  console.error(err.stack);
+  res.status(500).send('Uh oh, something went wrong');
 });
-
-// serve static files from the "public" folder
-app.use(express.static(path.join(__dirname, 'public')));
-
-
-// Start the server
-const PORT = process.env.PORT || 8080;
-// start the server
-app.listen(8080, () => {
-  console.log('Server listens on port 8080');
+//variable port listening
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0',() => {
+ console.log('Listening on Port ' + port);
 });
