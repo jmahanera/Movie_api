@@ -1,295 +1,129 @@
-const app = express()
+
 const express = require('express');
-const path = require('path');
-const morgan = require('morgan');
-const fs = require('fs');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-mongoose = require('mongoose')
-const logStream = fs.createWriteStream('requests.log', { flags: 'a' });
+app = express();
+bodyParser = require('body-parser');
+uuid = require('node-uuid');
 
-// Import the database module and connect to the database
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/myapp', { useNewUrlParser: true, useUnifiedTopology: true });
-const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true },
-  password: { type: String, required: true },
-  favorites: { type: [String], default: [] },
-});
+app.use(bodyParser.json());
 
-const User = mongoose.model('User', userSchema);
-
-    // Define an array of genre objects
-    const genres = [
-      {
-        name: 'Thriller',
-        description: 'Thriller is a genre of fiction, having numerous, often overlapping subgenres. Thrillers are characterized and defined by the moods they elicit, giving viewers heightened feelings of suspense, excitement, surprise, anticipation and anxiety.'
-      },
-      {
-        name: 'Comedy',
-        description: 'Comedy is a genre of fiction characterized by humor and wit. It often takes a lighthearted and humorous approach to serious subjects and events, and may include satire, parody, farce, or other comedic devices.'
-      },
-      {
-        name: 'Drama',
-        description: 'Drama is a genre of fiction characterized by serious or significant events or conflicts, often involving characters who face difficult or challenging circumstances. It may include tragic or uplifting themes, and may be presented in a variety of formats, including stage plays, films, television shows, or novels.'
-      }
-    ];
-
-    app.use(bodyParser.urlencoded({ extended: true }));
-    app.use(bodyParser.json());
-
-    const user = new User({ name, email, password });
-await user.save();
-
- // registration endpoint
-    app.post('/register', (req, res) => {
-      const { name, email, password } = req.body;
-
-      
-
-      // validate user input
-      if (!name || !email || !password) {
-        return res.status(400).json({ message: 'All fields are required.' });
-      }
-
-      // TODO: perform additional validation and save the user to the database
-
-      res.status(201).json({ message: 'User registered successfully.' });
-    });
-
-
-    const userId = parseInt(req.params.id);
-    const users = await User.findOne({ id: userId });
-    if (!user) {
-      return res.status(404).send('User not found');
-    }
-    res.send(user);
-    
-
-    // PUT request to update user data
-    app.put('/users/:id', async (req, res) => {
-      const userId = parseInt(req.params.id);
-      const user = users.find(user => user.id === userId);
-      if (!user) {
-        return res.status(404).send('User not found');
-      }
-
-      user.username = req.body.username;
-      await user.save();
-      res.send(user);
-      
-});
-
-// Initialize an empty list of favorite movies
-let favoriteMovies = [];
-
-// Parse JSON request bodies
-app.use(express.json());
-
-// Endpoint for adding a movie to favorites
-app.post('/favorites', (req, res) => {
-  const { title } = req.body;
-
-  // Add the movie title to the list of favorites
-  favoriteMovies.push(title);
-
-  // Send a response indicating that the movie has been added
-  res.send(`Movie "${title}" has been added to favorites!`);
-});
-
-// Define a route for removing a movie from a user's list of favorites
-app.delete('/favorites/:userId/:movieId', (req, res) => {
-  const { userId, movieId } = req.params;
-  
-  // Find the user in the database
-  const user = db.findUserById(userId);
-  if (!user) {
-    return res.status(404).send('User not found');
+let users = [
+  {
+    id: uuid.v4(),
+    name: '',
+    email: '',
+    age: '',
+    gender:''
   }
-  
-  // Remove the movie from the user's list of favorites
-  const index = user.favorites.indexOf(movieId);
-  if (index === -1) {
-    return res.status(404).send('Movie not found in user favorites');
-  }
-  user.favorites.splice(index, 1);
-  
-  // Update the user in the database
-  db.updateUser(user);
-  
-  // Send a response indicating that the movie has been removed
-  res.send('Movie removed from favorites');
+];
+
+// add more empty objects for more users
+users.push({
+  id: uuid.v4(),
+  name: '',
+  email: '',
+  age: '',
+  gender: ''
 });
 
-// handle POST request to delete a user by email
-app.post('/deregister', async (req, res) => {
-  try {
-    // connect to database
-    await client.connect();
-    const database = client.db('myapp');
-    const users = database.collection('users');
+let movies = [
 
-    // get email from request body
-    const email = req.body.email;
+  {
+    title: 'The Shawshank Redemption',
+    description: 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.',
+    genre: 'Drama',
+    directorName: 'Frank Darabont',
+    directorBio: 'Frank Darabont is a Hungarian-American film director, screenwriter, and producer who has directed some of the most acclaimed films of the last three decades.',
+    directorDOB: 'January 28, 1959',
+    imageUrl: 'https://www.imdb.com/title/tt0111161/mediaviewer/rm1125988352/'
+  },
+  {
+    title: 'The Godfather',
+    description: 'The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.',
+    genre: 'Crime',
+    directorName: 'Francis Ford Coppola',
+    directorBio: 'Francis Ford Coppola is an American film director, producer, and screenwriter. He is widely regarded as one of the greatest filmmakers of all time.',
+    directorDOB: 'April 7, 1939',
+    imageUrl: 'https://www.imdb.com/title/tt0068646/mediaviewer/rm2576136960/'
+  },
+  {
+    title: 'The Dark Knight',
+    description: 'When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.',
+    genre: 'Action',
+    directorName: 'Christopher Nolan',
+    directorBio: 'Christopher Nolan is a British-American film director, producer, and screenwriter. He is one of the most acclaimed and commercially successful filmmakers of the 21st century.',
+    directorDOB: 'July 30, 1970',
+    imageUrl: 'https://www.imdb.com/title/tt0468569/mediaviewer/rm4134867200/'
+  },
+  {
+    title: 'Pulp Fiction',
+    description: 'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.',
+    genre: 'Crime',
+    directorName: 'Quentin Tarantino',
+    directorBio: 'Quentin Tarantino is an American film director, screenwriter, and producer. He is one of the most influential and iconic filmmakers of the last few decades.',
+    directorDOB: 'March 27, 1963',
+    imageUrl: 'https://www.imdb.com/title/tt0110912/mediaviewer/rm1226096128/'
+  },
+  {
+    title: 'The Lord of the Rings: The Fellowship of the Ring',
+    description: 'A meek Hobbit from the Shire and eight companions set out on a journey to destroy the powerful One Ring and save Middle-earth from the Dark Lord Sauron.',
+    genre: 'Adventure',
+    directorName: 'Peter Jackson',
+    directorBio: 'Peter Jackson is a New Zealand film director, producer, and screenwriter. He is best known for his adaptations of J.R.R. Tolkien\'s novels, including "The Lord of the Rings" trilogy and "The Hobbit" trilogy.',
+    directorDOB: 'October 31, 1961',
+    imageUrl: 'https://www.imdb.com/title/tt0120737/mediaviewer/rm1432670976/'
+  },
+  {
+    title: 'John Wick',
+    description: 'John Wick uncovers a path to defeating The High Table. But before he can earn his freedom, Wick must face off against a new enemy with powerful alliances across the globe and forces that turn old friends into foes.',
+    genre: 'Action',
+    directorName: 'Charles F. Stahelski',
+    directorBio: 'He came from a kick-boxing background; he entered the film field as a stunt performer at the age of 24. Before that, he worked as an instructor at the Inosanto Martial Arts Academy in California, teaching Jeet Kune Do/Jun Fan.',
+    directorDOB: '20 September 1968',
+    imageUrl: 'https://www.themoviedb.org/collection/404609-john-wick-collection/images/posters'
+  },
+  {
+    title: 'Citadel',
+    description: 'Global spy agency Citadel has fallen, and its agents memories were wiped clean. Now the powerful syndicate, Manticore, is rising in the void. Can the Citadel agents recollect their past and summon the strength to fight back?',
+    genre: 'Drama',
+    directorName: 'Ciaran Foy',
+    directorBio: 'Ciarán Foy (born 1979) is an Irish film director and screenwriter, best known for directing and writing Citadel and directing Sinister 2. Foy was born in Northside Dublin in October 1979 and graduated from the National Film School',
+    directorDOB: 'October 1979',
+    imageUrl: 'https://www.imdb.com/title/tt9794044/mediaviewer/rm1456023553/?ref_=tt_ov_i'
+  },
 
-    // find user by email and delete
-    const result = await users.deleteOne({ email });
-    if (result.deletedCount === 1) {
-      res.send(`User with email ${email} has been removed`);
-    } else {
-      res.status(404).send('User not found');
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Internal server error');
-  } finally {
-    // close database connection
-    await client.close();
-  }
+   
+
+];
+
+//Read the
+app.get('/Movies', (req, res) => {
+  res.status(200).json(movies);
 });
 
-app.use(morgan('combined', { stream: logStream }));
+//Read the
+app.get('/movies/:title', (req, res) => {
+  const {title} = req.params;
+  const movie = movies.find(movie => movie.title === title);
 
-// define a route that returns a JSON object containing data about your top 10 movies
-app.get('/movies', (req, res) => {
-    const movies = [
-        {
-          title: 'The Shawshank Redemption',
-          director: 'Frank Darabont',
-          year: 1994
-        },
-        {
-          title: 'The Godfather',
-          director: 'Francis Ford Coppola',
-          year: 1972
-        },
-        {
-          title: 'The Dark Knight',
-          director: 'Christopher Nolan',
-          year: 2008
-        },
-        {
-          title: 'Schindler\'s List',
-          director: 'Steven Spielberg',
-          year: 1993
-        },
-        {
-          title: 'The Lord of the Rings: The Return of the King',
-          director: 'Peter Jackson',
-          year: 2003
-        },
-        {
-          title: 'Pulp Fiction',
-          director: 'Quentin Tarantino',
-          year: 1994
-        },
-        {
-          title: 'Forrest Gump',
-          director: 'Robert Zemeckis',
-          year: 1994
-        },
-        {
-          title: 'Inception',
-          director: 'Christopher Nolan',
-          year: 2010
-        },
-        {
-          title: 'The Lord of the Rings: The Fellowship of the Ring',
-          director: 'Peter Jackson',
-          year: 2001
-        },
-        {
-          title: 'The Matrix',
-          director: 'Lana Wachowski, Lilly Wachowski',
-          year: 1999
-        }
-      ];
-    
-      res.json(movies);
-});
-
-
-// Define a route to get all movies
-app.get('/movies', async (req, res) => {
-  try {
-    const movies = await Movie.find();
-    res.json(movies);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Server error');
-  }
-});
-
-// Define a route for getting movie data by title
-app.get('/movies/:title', async (req, res) => {
-  try {
-    const title = req.params.title;
-    const movie = await db.getMovieByTitle(title);
-    if (!movie) {
-      // If no movie is found with the given title, return a 404 error
-      return res.status(404).send('Movie not found');
-    }
-    // Otherwise, return the movie data to the user
-    res.send({
-      description: movie.description,
-      genre: movie.genre,
-      director: movie.director,
-      imageURL: movie.imageURL,
-      featured: movie.featured
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal server error');
-  }
-});
-
-// Define a route that accepts a genre name/title as a parameter
-app.get('/genre/:name', (req, res) => {
-  // Find the genre in the array that matches the name parameter
-  const genre = genres.find(g => g.name.toLowerCase() === req.params.name.toLowerCase());
-  
-  // If the genre is not found, return a 404 status code and an error message
-  if (!genre) {
-    return res.status(404).send('Genre not found');
-  }
-  
-  // If the genre is found, return its description
-  res.send(genre.description);
-});
-
-app.get('/director/:name', (req, res) => {
-  const name = req.params.name;
-  const director = directors.find(d => d.name.toLowerCase() === name.toLowerCase());
-
-  if (!director) {
-    res.status(404).send(`Director ${name} not found`);
+  if (movie) {
+    res.status(200).json(movie);
   } else {
-    const { bio, birthYear, deathYear } = director;
-    res.send({ bio, birthYear, deathYear });
+    res.status(404).json({message: 'Movie not found'});
   }
 });
 
+//Read the
+app.get('/movies/genre/:genreName', (req, res) => {
+  const {genreName} = req.params;
+  const genre = movies.find(movie => movie.genreName === genreName);
+
+  if (genre) {
+    res.status(200).json(genre);
+  } else {
+    res.status(404).json({message: 'Genre not found'});
+  }
+})
 
 
 
-
-// define a route that returns a default textual response
-app.get('/', (req, res) => {
-  res.send('Hello, There!');
-});
-
-app.get('/failure', (req, res, next) => {
-  const error = new Error('Failure loading');
-  next(error);
-});
-
-// Morgan middleware error handling function
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Uh oh, something went wrong');
-});
-//variable port listening
-const port = process.env.PORT || 8080;
-app.listen(port, '0.0.0.0',() => {
- console.log('Listening on Port ' + port);
-});
+app.Listen(8080, () => console.log ('Listening on port 8080'));
