@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+const mongoose = Require('mongoose');
+
 let movieSchema = mongoose.schema({
     title:{type: string, require: true},
     description: {type: string, require: true},
@@ -12,22 +13,20 @@ let movieSchema = mongoose.schema({
     },
     actors: [string],
     ImagePath: string,
-    Featured: Boolean
+    Featured: true
 });
 
 let userSchema = mongoose.schema({
     username:{type: string, require: true},
     password:{type: string, require: true},
     email:{type: string, require: true},
-    birthday: Date
+    birthday: Date,
     favoriteMovies: [{type: mongoose.schema.types.objectID, ref: 'movie'}]
 
 });
- let movie = mongoose.model('movie', movieSchema);
+ let Movie = mongoose.model('movie', movieSchema);
  let user = mongoose.model('user', user.userSchema);
 
- module.exports.movie = movie;
- module.exports.user = user;
+ Module.exports.Movie = Movie;
+ Module.exports.user = user;
 
- let movie = mongoose.model('movie', movieSchema);
- let user = mongoose.model('user', userSchema);

@@ -4,8 +4,11 @@ bodyParser = require('body-parser');
 uuid = require('uuid');
 
 const app = express();
+const mongoose = require('mongoose');
+const Models = require('Models');
 
 app.use(bodyParser.json());
+
 
 let users = [
   {
@@ -254,7 +257,6 @@ app.get('/movies/directors/:directorName', (req, res) => {
     res.status(404).json({message: 'Director not found'});
   }
 })
-
 
 
 app.listen(8080, () => console.log ('Listening on port 8080'))
