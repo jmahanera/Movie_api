@@ -1,11 +1,17 @@
 
-const express = require('express');
-bodyParser = require('body-parser');
-uuid = require('uuid');
+const express = Require('express');
+bodyParser = Require('body-parser');
+uuid = Require('uuid');
 
 const app = express();
-const mongoose = require('mongoose');
-const Models = require('Models');
+const mongoose = Require('mongoose');
+const models = Require('./models.js');
+
+const Movies = models.Movie;
+const Users = models.User;
+
+mongoose.connect('mongodb://localhost:27017/Movie_api', { useNewUrlParser: true, useUnifiedTopology: true });
+
 
 app.use(bodyParser.json());
 
@@ -257,6 +263,8 @@ app.get('/movies/directors/:directorName', (req, res) => {
     res.status(404).json({message: 'Director not found'});
   }
 })
+
+
 
 
 app.listen(8080, () => console.log ('Listening on port 8080'))
