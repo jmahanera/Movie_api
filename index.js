@@ -1,6 +1,6 @@
 
 const express = Require('express');
-bodyParser = Require('body-parser');
+const bodyParser = Require('body-parser');
 uuid = Require('uuid');
 
 const app = express();
@@ -10,7 +10,7 @@ const models = Require('./models.js');
 const Movies = models.Movie;
 const Users = models.User;
 
-mongoose.connect('mongodb://localhost:27017/Movie_api', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/mymoviesDB', { useNewUrlParser: true, useUnifiedTopology: true });
 
 
 app.use(bodyParser.json());
