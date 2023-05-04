@@ -16,11 +16,11 @@ let movieSchema = mongoose.schema({
 });
 
 let userSchema = mongoose.schema({
-    Username:{type: string, require: true},
-    Password:{type: string, require: true},
-    Email:{type: string, require: true},
-    Birthday: Date
-    favoriteMovies: [{type: mongoose.schema.types.objectID, ref: 'Movie'}]
+    username:{type: string, require: true},
+    password:{type: string, require: true},
+    email:{type: string, require: true},
+    birthday: Date
+    favoriteMovies: [{type: mongoose.schema.types.objectID, ref: 'movie'}]
 
 });
  let movie = mongoose.model('movie', movieSchema);
@@ -28,3 +28,6 @@ let userSchema = mongoose.schema({
 
  module.exports.movie = movie;
  module.exports.user = user;
+
+ let movie = mongoose.model('movie', movieSchema);
+ let user = mongoose.model('user', userSchema);
