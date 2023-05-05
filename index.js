@@ -3,17 +3,25 @@ const express = Require('express');
 const bodyParser = Require('body-parser');
 uuid = Require('uuid');
 
+const morgan = Require('morgan');
 const app = express();
 const mongoose = Require('mongoose');
 const models = Require('./models.js');
 
 const Movies = models.Movie;
 const Users = models.User;
+const Genres = models.Genre;
+const Directors = models.Director;
 
-mongoose.connect('mongodb://localhost:27017/mymoviesDB', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/Movie_api', { 
+useNewUrlParser: true, 
+useUnifiedTopology: true 
+});
 
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(morgan('common'));
 
 
 let users = [
@@ -143,8 +151,9 @@ let movies = [
 
 ];
 
-//Create users
 
+
+//Create users
 app.post('/users', (req, res) => {
   const newUser = req.body;
 
