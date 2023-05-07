@@ -4,8 +4,12 @@
   "description": "This is my first movie app",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "test": "echo \"Error: this is the test result\" && exit 1",
+    "dev": "nodemon index.js"
   },
+
+  
   "keywords": [],
   "author": "",
   "license": "ISC",
