@@ -1,26 +1,29 @@
 
-const express = Require('express');
-const bodyParser = Require('body-parser');
-uuid = Require('uuid');
+const express = require('express');
+uuid = require('uuid');
 
-const morgan = Require('morgan');
+
+const morgan = require('morgan');
+const mongoose = require('mongoose');
+const models = require('./models.js');
+const bcrypt = require('bcrypt');
 const app = express();
-const mongoose = Require('mongoose');
-const models = Require('./models.js');
+
 
 const Movies = models.Movie;
 const Users = models.User;
 const Genres = models.Genre;
 const Directors = models.Director;
 
-mongoose.connect('mongodb://localhost:27017/Movie_api', { 
+
+mongoose.connect('mongodb://localhost:27017/mymoviesDB', { 
 useNewUrlParser: true, 
 useUnifiedTopology: true 
 });
 
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan('common'));
 
 
@@ -62,7 +65,7 @@ let movies = [
     "Bio": 'Frank Darabont is a Hungarian-American film director, screenwriter, and producer who has directed some of the most acclaimed films of the last three decades.',
     "DOB": 'January 28, 1959',
     },
-    "ImageUrl": 'https://www.imdb.com/title/tt0111161/mediaviewer/rm1125988352/'
+    "ImageUrl": 'https://www.alamy.com/the-shawshank-redemption-image388458995.html'
   },
 
   {
@@ -76,7 +79,7 @@ let movies = [
     "Bio": 'Francis Ford Coppola is an American film director, producer, and screenwriter. He is widely regarded as one of the greatest filmmakers of all time.',
     "DOB": "April 7, 1939",
     },
-    "ImageUrl": 'https://www.imdb.com/title/tt0068646/mediaviewer/rm2576136960/'
+    "ImageUrl": 'https://www.imdb.com/title/tt0068646/companycredits/'
   },
 
   {
@@ -90,7 +93,7 @@ let movies = [
     "Bio": "Christopher Nolan is a British-American film director, producer, and screenwriter. He is one of the most acclaimed and commercially successful filmmakers of the 21st century.",
     "DOB": "July 30, 1970",
     },
-    "ImageUrl": 'https://www.imdb.com/title/tt0068646/mediaviewer/rm2576136960/'
+    "ImageUrl": 'https://www.alamy.com/stock-photo/the-dark-knight-2008.html?sortBy=relevant'
   },
 
   {
@@ -104,7 +107,7 @@ let movies = [
     "Bio": "Quentin Tarantino is an American film director, screenwriter, and producer. He is one of the most influential and iconic filmmakers of the last few decades.",
     "DOB": "March 27, 1963",
     },
-    "ImageUrl": 'https://www.imdb.com/title/tt0068646/mediaviewer/rm2576136960/'
+    "ImageUrl": 'https://www.alamy.com/stock-photo/pulp-fiction.html?sortBy=relevant'
   },
 
   {
@@ -118,7 +121,7 @@ let movies = [
     "Bio": "Peter Jackson is a New Zealand film director, producer, and screenwriter. He is best known for his adaptations of J.R.R. Tolkien\'s novels, including The Lord of the Rings trilogy and The Hobbit  trilogy.",
     "DOB": "October 31, 1961",
     },
-    "ImageUrl": 'https://www.imdb.com/title/tt0068646/mediaviewer/rm2576136960/'
+    "ImageUrl": 'https://www.alamy.com/stock-photo-1970s-usa-lord-of-the-rings-film-poster-85316212.html?imageid=4E37C6C1-E8A1-4BDE-8636-EA9720202CD0&p=1337086&pn=1&searchId=7ca789875afa74b8ad1a6cbcdc6beb77&searchtype=0'
   },
 
   {
@@ -132,7 +135,7 @@ let movies = [
     "Bio": "He came from a kick-boxing background; he entered the film field as a stunt performer at the age of 24. Before that, he worked as an instructor at the Inosanto Martial Arts Academy in California, teaching Jeet Kune Do/Jun Fan.",
     "DOB": "20 September 1968",
     },
-    "ImageUrl": 'https://www.imdb.com/title/tt0068646/mediaviewer/rm2576136960/'
+    "ImageUrl": 'https://www.alamy.com/stock-photo/john-wick.html?sortBy=relevant'
   },
 
   {
@@ -146,25 +149,13 @@ let movies = [
     "Bio": "Ciarán Foy (born 1979) is an Irish film director and screenwriter, best known for directing and writing Citadel and directing Sinister 2. Foy was born in Northside Dublin in October 1979 and graduated from the National Film School",
     "DOB": "October 1979",
     },
-    "ImageUrl": "https://www.imdb.com/title/tt9794044/mediaviewer/rm1456023553/?ref_=tt_ov_i"
+    "ImageUrl": 'https://collider.com/citadel-images-priyanka-chopra-jonas-richard-madden/'
   },
 
 ];
 
 
 
-//Create users
-app.post('/users', (req, res) => {
-  const newUser = req.body;
-
-  if (newUser.name) {
-    newUser.id = uuid.v4();
-    users.push(newUser);
-    res.status(201).json(newUser);
-  } else { 
-    res.status(400).send({message: 'users need Names'});
-  }
-})
 
 //Update
 
@@ -192,7 +183,7 @@ app.post('/users/:id/:movieTitle', (req, res) => {
 
   if (user) {
     user.favoriteMovies.push(movieTitle);
-    res.status(200).send(' ${movieTitle} has been added to user ${id} s array.');;
+    res.status(200).send(`${movieTitle} has been added to user ${id}'s array.`);
   } else {
     res.status(400).send({message: 'no such user'});
   }
@@ -214,6 +205,8 @@ app.delete('/users/:id/:movieTitle', (req, res) => {
   }
 
 });
+
+
 
 //Delete
 
@@ -272,6 +265,115 @@ app.get('/movies/directors/:directorName', (req, res) => {
     res.status(404).json({message: 'Director not found'});
   }
 })
+
+//Add a user
+/* We’ll expect JSON in this format
+{
+  ID: Integer,
+  Username: String,
+  Password: String,
+  Email: String,
+  Birthday: Date
+}*/
+app.post('/users', (req, res) => {
+  Users.findOne({ Username: req.body.Username })
+    .then((user) => {
+      if (user) {
+        return res.status(400).send(req.body.Username + 'already exists');
+      } else {
+        Users
+          .create({
+            Username: req.body.Username,
+            Password: req.body.Password,
+            Email: req.body.Email,
+            Birthday: req.body.Birthday
+          })
+          .then((user) =>{res.status(201).json(user) })
+        .catch((error) => {
+          console.error(error);
+          res.status(500).send('Error: ' + error);
+        })
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
+});
+
+// Get all users
+app.get('/users', (req, res) => {
+  Users.find()
+    .then((users) => {
+      res.status(201).json(users);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+// Get a user by username
+app.get('/users/:Username', (req, res) => {
+  Users.findOne({ Username: req.params.Username })
+    .then((user) => {
+      res.json(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+
+
+app.put('/users/:Username', async (req, res) => {
+  try {
+    const { Username, Password, Email, Birthday } = req.body;
+
+    // Validate input data
+    // ...
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(Password, 10);
+
+    const updatedUser = await Users.findOneAndUpdate(
+      { Username: req.params.Username },
+      {
+        $set: {
+          Username,
+          Password: hashedPassword,
+          Email,
+          Birthday
+        }
+      },
+      { new: true }
+    );
+
+    res.json(updatedUser);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error: ' + error.message);
+  }
+});
+
+// Add a movie to a user's list of favorites
+app.post('/users/:Username/movies/:MovieID', (req, res) => {
+  Users.findOneAndUpdate({ Username: req.params.Username }, {
+     $push: { FavoriteMovies: req.params.MovieID }
+   },
+   { new: true }, // This line makes sure that the updated document is returned//
+  (err, updatedUser) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    } else {
+      res.json(updatedUser);
+    }
+  });
+});
+
+
 
 
 
