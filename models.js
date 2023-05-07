@@ -1,41 +1,43 @@
 // Importing the Mongoose library to connect with the MongoDB database.
-const mongoose = Require('mongoose');
+const mongoose = require('mongoose');
 
-// Defining a schema for movies that includes various details about a movie.
-let movieSchema = mongoose.schema({
-    title:{type: string, require: true},
-    description: {type: string, require: true},
-    genre: {
-        name: string,
-        description: string,
-    },
-    director: {
-        name: string,
-        bio: string,
-    },
-    actors: [string],
-    ImagePath: string,
-    Featured: true
-});
+
+// Creating a User model using the userSchema.
+let user = mongoose.model('user', userSchema);
+
+// Creating a Movie model using the movieSchema.
+let Movie = mongoose.model('movie', movieSchema);
 
 // Defining a schema for users that includes their personal details and favorite movies.
-let userSchema = mongoose.schema({
-    username:{type: string, require: true},
-    password:{type: string, require: true},
-    email:{type: string, require: true},
+let userSchema = new mongoose.Schema({
+    username:{type: 'string', required: true, unique: true},
+    password:{type: 'string', required: true},
+    email:{type: 'string', required: true},
     birthday: Date,
-    favoriteMovies: [{type: mongoose.schema.types.objectID, ref: 'movie'}]
-
+    favoriteMovies: [{type: mongoose.Schema.Types.ObjectId, ref: 'movie'}]
 });
 
-// Creating a Movie model using the movieSchema
- let Movie = mongoose.model('movie', movieSchema);
+// Defining a schema for movies that includes various details about a movie.
+let movieSchema = mongoose.Schema({
+    title:{type: 'string', required: true},
+    description: {type: 'string', required: true},
+    genre: {
+        name: 'string',
+        description: 'string',
+    },
+    director: {
+        name: 'string',
+        bio: 'string',
+    },
+    actors: ['string'],
+    ImagePath: 'string',
+    Featured: Boolean
+});
 
- // Creating a User model using the userSchema.
- let user = mongoose.model('user', user.userSchema);
+const User = mongoose.model('User', userSchema);
 
+// Exporting the User models so that they can be accessed by other modules.
+module.exports = user;
 
-// Exporting the Movie and User models so that they can be accessed by other modules.
- Module.exports.Movie = Movie;
- Module.exports.user = user;
-
+// Exporting the Movie models so that they can be accessed by other modules.
+module.exports.Movie = Movie;
