@@ -1,56 +1,173 @@
-
 const express = require('express');
+fs = require('fs');
+path = require('path');
+bodyParser = require('body-parser');
 uuid = require('uuid');
-
-
 const morgan = require('morgan');
 const mongoose = require('mongoose');
-const models = require('./models.js');
-const bcrypt = require('bcrypt');
+const Models = require('./models.js');
+
+const Movies = Models.Movie;
+const Users = Models.User;
+
+mongoose.connect('mongodb://localhost:27017/mymoviesDB', 
+{ useNewUrlParser: true, 
+  useUnifiedTopology: true });
+
 const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {
+  flags: 'a'
+});
+app.use(morgan('combined', {
+  stream: accessLogStream
+}));
+
+app.use(express.static('public'));
+
+// GET requests
+app.get('/', (req, res) => {
+  res.send('Welcome to mymoviesDB!');
+  });
 
 
-const Movies = models.Movie;
-const Users = models.User;
-const Genres = models.Genre;
-const Directors = models.Director;
+//Get all movies from DB
+//Read 
+app.get('/movies', (req, res) => {
+  Movies.find()
+    .then(movies => {
+      res.status(200).json(movies);
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
 
+//Read Get Movies by title
+app.get('/movies/:title', (req, res) => {
+  const {title} = req.params;
+  const movie = movies.find(movie => movie.Title === title);
 
-mongoose.connect('mongodb://localhost:27017/mymoviesDB', { 
-useNewUrlParser: true, 
-useUnifiedTopology: true 
+  if (movie) {
+    res.status(200).json(movie);
+  } else {
+    res.status(400).json({message: 'Movie not found'});
+  }
+})
+
+//Get Movies by GenreName
+app.get('/movies/genre/:genreName', (req, res) => {
+  const {genreName} = req.params;
+  const genre = movies.find(movie => movie.Genre.Name === genreName).Genre;
+
+  if (genre) {
+    res.status(200).json(genre);
+  } else {
+    res.status(404).json({message: 'Genre not found'});
+  }
+})
+
+//Get Movies by DirectorName
+app.get('/movies/directors/:directorName', (req, res) => {
+  const {directorName} = req.params;
+  const director = movies.find(movie => movie.Director.Name === directorName).Director;
+
+  if (director) {
+    res.status(200).json(director);
+  } else {
+    res.status(404).json({message: 'Director not found'});
+  }
+})
+
+//Get data about a director by name
+app.get('/movies/director_description/:Director', (req, res) => {
+  movies.findOne({'Director.Name': req.params.Director})
+  .then((movie) => {
+    if (!movie) {
+      return res.status(404).send('Error: ' + req.params.Director + ' was not found');
+    } else {
+      res.status(200).json(movie.Director);
+    }
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error: ' + err);
+  });
+});
+
+app.get('/movies/director_description/:Director', (req, res) => {
+  movies.findOne({'Director.Name': req.params.Director})
+  .then((movie) => {
+    if (!movie) {
+      return res.status(404).send('Error: ' + req.params.Director + ' was not found');
+    } else {
+      res.status(200).json(movie.Director);
+    }
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error: ' + err);
+  });
 });
 
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(morgan('common'));
+const Genres = Models.Genre;
+const Directors = Models.Director;
 
+let movieSchema = mongoose.Schema({
+  Title: {type: String, required: true},
+  Description: {type: String, required: true},
+  Genre: {
+    Name: String,
+    Description: String
+  },
+  Director: {
+    Name: String,
+    Biography: String,
+    Birthyear: String,
+  },
+  Actors: [String],
+  ImagePath: String,
+  Featured: Boolean
+});
 
-let users = [
+let userSchema = mongoose.Schema({
+  Username: {type: String, required: true},
+  Password: {type: String, required: true},
+  Email: {type: String, required: true},
+  Birthday: Date,
+  FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie' }]
+});
+
+let Movie = mongoose.model('Movie', movieSchema);
+let User = mongoose.model('User', userSchema);
+
+module.exports.Movie = Movie;
+module.exports.User = User;
+
+const users = [
   {
-    id: 1,
+    _id: uuid.v4(),
     name: 'Dave',
-    favoriteMovies: [],
-    
+    FavoriteMovies: [],
   },
 
   {
-    id: 2,
+    _id: uuid.v4(),
     name: 'Annabel',
-    favoriteMovies: ['The Godfather'],
-    
+    FavoriteMovies: ['The Godfather'],
   },
 
   {
-    id: 3,
+    _id: uuid.v4(),
     name: "Margot",
-    favoriteMovies: ["The Dark Knight", "Pulp Fiction"],
-    
+    FavoriteMovies: ["The Dark Knight", "Pulp Fiction"],
   }
 
 ];
-
 
 let movies = [
 
@@ -62,8 +179,8 @@ let movies = [
   },
     "Director": {
     "Name": "Frank Darabont",
-    "Bio": 'Frank Darabont is a Hungarian-American film director, screenwriter, and producer who has directed some of the most acclaimed films of the last three decades.',
-    "DOB": 'January 28, 1959',
+    "Biography": 'Frank Darabont is a Hungarian-American film director, screenwriter, and producer who has directed some of the most acclaimed films of the last three decades.',
+    "Birthyear": 'January 28, 1959',
     },
     "ImageUrl": 'https://www.alamy.com/the-shawshank-redemption-image388458995.html'
   },
@@ -76,8 +193,8 @@ let movies = [
     },
     "Director": {
     "Name": "Francis Ford Coppola",
-    "Bio": 'Francis Ford Coppola is an American film director, producer, and screenwriter. He is widely regarded as one of the greatest filmmakers of all time.',
-    "DOB": "April 7, 1939",
+    "Biography": 'Francis Ford Coppola is an American film director, producer, and screenwriter. He is widely regarded as one of the greatest filmmakers of all time.',
+    "Birthyear": "April 7, 1939",
     },
     "ImageUrl": 'https://www.imdb.com/title/tt0068646/companycredits/'
   },
@@ -90,8 +207,8 @@ let movies = [
     },
     "Director": {
     "Name": "Christopher Nolan",
-    "Bio": "Christopher Nolan is a British-American film director, producer, and screenwriter. He is one of the most acclaimed and commercially successful filmmakers of the 21st century.",
-    "DOB": "July 30, 1970",
+    "Biography": "Christopher Nolan is a British-American film director, producer, and screenwriter. He is one of the most acclaimed and commercially successful filmmakers of the 21st century.",
+    "Birthyear": "July 30, 1970",
     },
     "ImageUrl": 'https://www.alamy.com/stock-photo/the-dark-knight-2008.html?sortBy=relevant'
   },
@@ -104,8 +221,8 @@ let movies = [
     },
     "Director": {
     "Name": "Quentin Tarantino",
-    "Bio": "Quentin Tarantino is an American film director, screenwriter, and producer. He is one of the most influential and iconic filmmakers of the last few decades.",
-    "DOB": "March 27, 1963",
+    "Biography": "Quentin Tarantino is an American film director, screenwriter, and producer. He is one of the most influential and iconic filmmakers of the last few decades.",
+    "Birthyear": "March 27, 1963",
     },
     "ImageUrl": 'https://www.alamy.com/stock-photo/pulp-fiction.html?sortBy=relevant'
   },
@@ -118,8 +235,8 @@ let movies = [
     },
     "Director": { 
     "Name": "Peter Jackson",
-    "Bio": "Peter Jackson is a New Zealand film director, producer, and screenwriter. He is best known for his adaptations of J.R.R. Tolkien\'s novels, including The Lord of the Rings trilogy and The Hobbit  trilogy.",
-    "DOB": "October 31, 1961",
+    "Biography": "Peter Jackson is a New Zealand film director, producer, and screenwriter. He is best known for his adaptations of J.R.R. Tolkien\'s novels, including The Lord of the Rings trilogy and The Hobbit  trilogy.",
+    "Birthyear": "October 31, 1961",
     },
     "ImageUrl": 'https://www.alamy.com/stock-photo-1970s-usa-lord-of-the-rings-film-poster-85316212.html?imageid=4E37C6C1-E8A1-4BDE-8636-EA9720202CD0&p=1337086&pn=1&searchId=7ca789875afa74b8ad1a6cbcdc6beb77&searchtype=0'
   },
@@ -132,8 +249,8 @@ let movies = [
     },
     "Director": {
     "Name": "Charles F. Stahelski",
-    "Bio": "He came from a kick-boxing background; he entered the film field as a stunt performer at the age of 24. Before that, he worked as an instructor at the Inosanto Martial Arts Academy in California, teaching Jeet Kune Do/Jun Fan.",
-    "DOB": "20 September 1968",
+    "Biography": "He came from a kick-boxing background; he entered the film field as a stunt performer at the age of 24. Before that, he worked as an instructor at the Inosanto Martial Arts Academy in California, teaching Jeet Kune Do/Jun Fan.",
+    "Birthyear": "20 September 1968",
     },
     "ImageUrl": 'https://www.alamy.com/stock-photo/john-wick.html?sortBy=relevant'
   },
@@ -146,16 +263,13 @@ let movies = [
     },
     "Director": {
     "Name": "Ciaran Foy",
-    "Bio": "Ciarán Foy (born 1979) is an Irish film director and screenwriter, best known for directing and writing Citadel and directing Sinister 2. Foy was born in Northside Dublin in October 1979 and graduated from the National Film School",
-    "DOB": "October 1979",
+    "Biography": "Ciarán Foy (born 1979) is an Irish film director and screenwriter, best known for directing and writing Citadel and directing Sinister 2. Foy was born in Northside Dublin in October 1979 and graduated from the National Film School",
+    "Birthyear": "October 1979",
     },
     "ImageUrl": 'https://collider.com/citadel-images-priyanka-chopra-jonas-richard-madden/'
   },
 
 ];
-
-
-
 
 //Update
 
@@ -206,8 +320,6 @@ app.delete('/users/:id/:movieTitle', (req, res) => {
 
 });
 
-
-
 //Delete
 
 app.delete('/users/:id', (req, res) => {
@@ -224,57 +336,7 @@ app.delete('/users/:id', (req, res) => {
 
 })
 
-//Read 
-app.get('/Movies', (req, res) => {
-  res.status(200).json(movies);
-});
 
-//Read 
-app.get('/movies/:title', (req, res) => {
-  const {title} = req.params;
-  const movie = movies.find(movie => movie.Title === title);
-
-  if (movie) {
-    res.status(200).json(movie);
-  } else {
-    res.status(400).json({message: 'Movie not found'});
-  }
-})
-
-//Read
-app.get('/movies/genre/:genreName', (req, res) => {
-  const {genreName} = req.params;
-  const genre = movies.find(movie => movie.Genre.Name === genreName).Genre;
-
-  if (genre) {
-    res.status(200).json(genre);
-  } else {
-    res.status(404).json({message: 'Genre not found'});
-  }
-})
-
-
-//Read
-app.get('/movies/directors/:directorName', (req, res) => {
-  const {directorName} = req.params;
-  const director = movies.find(movie => movie.Director.Name === directorName).Director;
-
-  if (director) {
-    res.status(200).json(director);
-  } else {
-    res.status(404).json({message: 'Director not found'});
-  }
-})
-
-//Add a user
-/* We’ll expect JSON in this format
-{
-  ID: Integer,
-  Username: String,
-  Password: String,
-  Email: String,
-  Birthday: Date
-}*/
 app.post('/users', (req, res) => {
   Users.findOne({ Username: req.body.Username })
     .then((user) => {
@@ -325,8 +387,6 @@ app.get('/users/:Username', (req, res) => {
     });
 });
 
-
-
 app.put('/users/:Username', async (req, res) => {
   try {
     const { Username, Password, Email, Birthday } = req.body;
@@ -373,9 +433,15 @@ app.post('/users/:Username/movies/:MovieID', (req, res) => {
   });
 });
 
-
-
-
+app.get('/documentation', (req, res) => {                  
+  res.sendFile('public/documentation.html', { root: __dirname });
+  });
+    
+  // Error 
+  app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('There was an error. Please try again later.');
+  });
 
 
 app.listen(8080, () => console.log ('Listening on port 8080'))
