@@ -9,6 +9,8 @@ const Models = require('./models.js');
 
 const Movies = Models.Movie;
 const Users = Models.User;
+const Genres = Models.Genre;
+const Directors = Models.Director;
 
 mongoose.connect('mongodb://localhost:27017/mymoviesDB', 
 { useNewUrlParser: true, 
@@ -98,24 +100,6 @@ app.get('/movies/director_description/:Director', (req, res) => {
   });
 });
 
-app.get('/movies/director_description/:Director', (req, res) => {
-  movies.findOne({'Director.Name': req.params.Director})
-  .then((movie) => {
-    if (!movie) {
-      return res.status(404).send('Error: ' + req.params.Director + ' was not found');
-    } else {
-      res.status(200).json(movie.Director);
-    }
-  })
-  .catch((err) => {
-    console.error(err);
-    res.status(500).send('Error: ' + err);
-  });
-});
-
-
-const Genres = Models.Genre;
-const Directors = Models.Director;
 
 let movieSchema = mongoose.Schema({
   Title: {type: String, required: true},
