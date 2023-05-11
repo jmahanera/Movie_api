@@ -12,7 +12,7 @@ const Users = Models.User;
 const Genres = Models.Genre;
 const Directors = Models.Director;
 
-mongoose.connect('mongodb://localhost:27017/mymoviesDB', 
+mongoose.connect('mongodb://localhost:27017/mymoviesDB',  
 { useNewUrlParser: true, 
   useUnifiedTopology: true });
 
@@ -34,71 +34,6 @@ app.get('/', (req, res) => {
   res.send('Welcome to mymoviesDB!');
   });
 
-
-//Get all movies from DB
-//Read 
-app.get('/movies', (req, res) => {
-  Movies.find()
-    .then(movies => {
-      res.status(200).json(movies);
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
-
-//Read Get Movies by title
-app.get('/movies/:title', (req, res) => {
-  const {title} = req.params;
-  const movie = movies.find(movie => movie.Title === title);
-
-  if (movie) {
-    res.status(200).json(movie);
-  } else {
-    res.status(400).json({message: 'Movie not found'});
-  }
-})
-
-//Get Movies by GenreName
-app.get('/movies/genre/:genreName', (req, res) => {
-  const {genreName} = req.params;
-  const genre = movies.find(movie => movie.Genre.Name === genreName).Genre;
-
-  if (genre) {
-    res.status(200).json(genre);
-  } else {
-    res.status(404).json({message: 'Genre not found'});
-  }
-})
-
-//Get Movies by DirectorName
-app.get('/movies/directors/:directorName', (req, res) => {
-  const {directorName} = req.params;
-  const director = movies.find(movie => movie.Director.Name === directorName).Director;
-
-  if (director) {
-    res.status(200).json(director);
-  } else {
-    res.status(404).json({message: 'Director not found'});
-  }
-})
-
-//Get data about a director by name
-app.get('/movies/director_description/:Director', (req, res) => {
-  movies.findOne({'Director.Name': req.params.Director})
-  .then((movie) => {
-    if (!movie) {
-      return res.status(404).send('Error: ' + req.params.Director + ' was not found');
-    } else {
-      res.status(200).json(movie.Director);
-    }
-  })
-  .catch((err) => {
-    console.error(err);
-    res.status(500).send('Error: ' + err);
-  });
-});
 
 
 let movieSchema = mongoose.Schema({
@@ -132,7 +67,7 @@ let User = mongoose.model('User', userSchema);
 module.exports.Movie = Movie;
 module.exports.User = User;
 
-const users = [
+let users = [
   {
     _id: uuid.v4(),
     name: 'Dave',
@@ -255,8 +190,75 @@ let movies = [
 
 ];
 
-//Update
 
+//Get all movies from DB
+//Read 
+app.get('/movies', (req, res) => {
+  Movies.find()
+    .then(movies => {
+      res.status(200).json(movies);
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+//Read Get Movies by title
+app.get('/movies/:title', (req, res) => {
+  const {title} = req.params;
+  const movie = movies.find(movie => movie.Title === title);
+
+  if (movie) {
+    res.status(200).json(movie);
+  } else {
+    res.status(400).json({message: 'Movie not found'});
+  }
+})
+
+//Get Movies by GenreName
+app.get('/movies/genre/:genreName', (req, res) => {
+  const {genreName} = req.params;
+  const genre = movies.find(movie => movie.Genre.Name === genreName).Genre;
+
+  if (genre) {
+    res.status(200).json(genre);
+  } else {
+    res.status(404).json({message: 'Genre not found'});
+  }
+})
+
+//Get Movies by DirectorName
+app.get('/movies/directors/:directorName', (req, res) => {
+  const {directorName} = req.params;
+  const director = movies.find(movie => movie.Director.Name === directorName).Director;
+
+  if (director) {
+    res.status(200).json(director);
+  } else {
+    res.status(404).json({message: 'Director not found'});
+  }
+})
+
+//Get data about a director by name
+app.get('/movies/director_description/:Director', (req, res) => {
+  movies.findOne({'Director.Name': req.params.Director})
+  .then((movie) => {
+    if (!movie) {
+      return res.status(404).send('Error: ' + req.params.Director + ' was not found');
+    } else {
+      res.status(200).json(movie.Director);
+    }
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error: ' + err);
+  });
+});
+
+
+
+//Update
 app.put('/users/:id', (req, res) => {
   const {id} = req.params;
   const updatedUser = req.body;
