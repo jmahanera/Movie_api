@@ -193,15 +193,14 @@ let movies = [
 
 //Get all movies from DB
 //Read 
-app.get('/movies', (req, res) => {
-  Movies.find()
-    .then(movies => {
-      res.status(200).json(movies);
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
+app.get('/movies', async (req, res) => {
+  try {
+    const movies = await Movies.find();
+    res.status(200).json(movies);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 //Read Get Movies by title
