@@ -258,7 +258,7 @@ app.get('/movies/director_description/:Director', (req, res) => {
 
 
 
-//Update
+//Update users by id
 app.put('/users/:id', (req, res) => {
   const {id} = req.params;
   const updatedUser = req.body;
@@ -274,7 +274,7 @@ app.put('/users/:id', (req, res) => {
 
 })
 
-//Create
+//Addd favorite movies to user 
 
 app.post('/users/:id/:movieTitle', (req, res) => {
   const {id, movieTitle} = req.params;
@@ -290,7 +290,7 @@ app.post('/users/:id/:movieTitle', (req, res) => {
 
 })
 
-//Delete
+//Delete a favorite movie from user ${id}
 
 app.delete('/users/:id/:movieTitle', (req, res) => {
   const {id, movieTitle} = req.params;
@@ -306,7 +306,7 @@ app.delete('/users/:id/:movieTitle', (req, res) => {
 
 });
 
-//Delete
+//Delete user 
 
 app.delete('/users/:id', (req, res) => {
   const {id} = req.params;
@@ -322,7 +322,7 @@ app.delete('/users/:id', (req, res) => {
 
 })
 
-
+//find user by name
 app.post('/users', (req, res) => {
   Users.findOne({ Username: req.body.Username })
     .then((user) => {
