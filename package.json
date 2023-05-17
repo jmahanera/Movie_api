@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "core-js": "^3.30.2",
     "date": "^2.0.2",
@@ -20,7 +21,9 @@
     "lodash": "^4.17.21",
     "mongoose": "^7.1.1",
     "morgan": "^1.10.0",
+    "node": "^20.1.0",
     "node-uuid": "^1.4.8",
+    "node.js": "^0.0.1-security",
     "uuid": "^9.0.0",
     "winston": "^3.8.2"
   },
