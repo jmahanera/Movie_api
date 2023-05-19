@@ -192,13 +192,12 @@ app.delete('/users/:userName/movies/:MovieID', (req, res) => {
 
 
 
-//updates a account holders information
+// updates an account holder's information
 app.put('/users/:userName', (req, res) => {
   Users.findOneAndUpdate(
     { Username: req.params.userName },
     {
       $set: {
-        Username: req.body.Username,
         Password: req.body.Password,
         Email: req.body.Email,
         Birthday: req.body.Birthday
