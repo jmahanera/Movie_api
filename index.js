@@ -1,4 +1,6 @@
 const express = require('express');
+const app = express();
+const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
@@ -15,7 +17,7 @@ mongoose.connect('mongodb://localhost:27017/mymoviesDB',
 { useNewUrlParser: true, 
   useUnifiedTopology: true 
 });
-app = express ();
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -222,7 +224,7 @@ app.put('/users/:userName', (req, res) => {
 
 
 // Delete User by ID
-app.delete('/Users/:userId', (req, res) => {
+app.delete('/users/:userId', (req, res) => {
   Users.findByIdAndRemove(req.params.userId)
     .then((user) => {
       if (!user) {
