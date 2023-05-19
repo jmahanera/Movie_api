@@ -154,21 +154,7 @@ app.post('/users/:userName/movies/:MovieID', (req, res) => {
     });
 });
 
-//deletes a user by username
-app.delete('/users/:userName', (req, res) => {
-  Users.findOneAndRemove({ Username: req.params.userName })
-    .then((user) => {
-      if (!user) {
-        res.status(400).send(req.params.userName + ' was not found');
-      } else {
-        res.status(200).send(req.params.userName + ' was deleted');
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
+
 
 //allows users to delete movies from their favorites
 app.delete('/users/:userName/movies/:MovieID', (req, res) => {
@@ -221,6 +207,21 @@ app.put('/users/:userName', (req, res) => {
 });
 
 
+//deletes a user by username
+app.delete('/users/:userName', (req, res) => {
+  Users.findOneAndRemove({ Username: req.params.userName })
+    .then((user) => {
+      if (!user) {
+        res.status(400).send(req.params.userName + ' was not found');
+      } else {
+        res.status(200).send(req.params.userName + ' was deleted');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
 
 
 // Delete User by ID
@@ -238,6 +239,26 @@ app.delete('/users/:userId', (req, res) => {
       res.status(500).send('Error: ' + err);
     });
 });
+
+
+// Delete a movie by ID
+app.delete('/movies/:movieId', (req, res) => {
+  const movieId = req.params.movieId;
+
+  Movies.findOneAndRemove({ _id: movieId })
+    .then((movie) => {
+      if (!movie) {
+        res.status(400).send(movieId + ' was not found');
+      } else {
+        res.status(200).send(movieId + ' was deleted');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
 
 
 
@@ -270,6 +291,6 @@ app.get('/documentation', (req, res) => {
 
 
 //if everything functions correctly this message is logged from port 3000 thats listening.
-app.listen(3000, () => {
-  console.log('Your app is listening on port 3000.');
+app.listen(8080, () => {
+  console.log('Your app is listening on port 8080.');
 });
