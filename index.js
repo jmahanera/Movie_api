@@ -20,6 +20,7 @@ mongoose.connect('mongodb://localhost:27017/mymoviesDB',
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
 let auth = require ('./auth') (app);
 const passport = require('passport');
 require('./passport');
@@ -65,7 +66,8 @@ app.get('/users/:userName', (req, res) => {
 
 
 //gets a JSON object of all the current movies on the server
-app.get('/movies', (req, res) => {
+app.get('/movies', passport.authenticate('jwt', { session: false}),
+ (req, res) => {
   Movies.find()
     .then((movies) => {
       res.status(200).json(movies);
