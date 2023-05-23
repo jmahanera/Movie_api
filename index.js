@@ -1,38 +1,44 @@
 const express = require('express');
+const morgan = require('morgan');
+const bodyParser = require('body-parser');
 const app = express();
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcrypt');
-const bodyParser = require('body-parser');
 const uuid = require('uuid');
-const morgan = require('morgan');
+
+
 const mongoose = require('mongoose');
 const Models = require('./models.js');
 
 const Movies = Models.Movie;
 const Users = Models.User;
 
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {
+  flags: 'a'
+});
+
+const saltRounds = 10; // Number of salt rounds for bcrypt hashing
+
+
+//Middleware
+app.use(express.static('public'));
+app.use(morgan('combined', {
+  stream: accessLogStream
+}));
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+
+let auth = require('./auth')(app);
+const passport = require('passport');
+require('./passport.js');
 
 mongoose.connect('mongodb://localhost:27017/mymoviesDB',  
 { useNewUrlParser: true, 
   useUnifiedTopology: true 
 });
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-let auth = require ('./auth') (app);
-const passport = require('passport');
-require('./passport');
-
-const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {
-  flags: 'a'
-});
-app.use(morgan('combined', {
-  stream: accessLogStream
-}));
-
-app.use(express.static('public'));
 
 // GET requests
 //this setups a message once the user goes to the home page of the website.
@@ -44,7 +50,7 @@ app.get('/', (request, response) => {
 app.get('/users', (req, res) => {
   Users.find()
     .then((users) => {
-      res.status(201).json(users);
+      res.status(200).json(users);
     })
     .catch((err) => {
       console.error(err);
@@ -54,7 +60,7 @@ app.get('/users', (req, res) => {
 
 //get a user by username
 app.get('/users/:userName', (req, res) => {
-  Users.findOne({ Username: req.params.userName })
+  Users.findOne({ username: req.body.userName })
     .then((user) => {
       res.status(200).json(user);
     })
@@ -70,7 +76,7 @@ app.get('/movies', passport.authenticate('jwt', { session: false}),
  (req, res) => {
   Movies.find()
     .then((movies) => {
-      res.status(200).json(movies);
+      res.status(201).json(movies);
     })
     .catch((err) => {
       console.error(err);
@@ -103,6 +109,8 @@ app.get('/movies/genres/:genreName', (req, res) => {
     });
 });
 
+
+
 //searches for movies by the directors name and returns the movies with that directors name
 app.get('/movies/directors/:directorsName', (req, res) => {
   Movies.find({ 'Director.Name': req.params.directorsName })
@@ -114,28 +122,41 @@ app.get('/movies/directors/:directorsName', (req, res) => {
     });
 });
 
-//creates a new user and adds them to the list of users.
-app.post('/users', (req, res) => {
-  Users.findOne({ Username: req.body.Username }).then((user) => {
-    if (user) {
-      return res.status(400).send(req.body.Username + 'already exists');
-    } else {
-      Users.create({
-        Username: req.body.Username,
-        Password: req.body.Password,
-        Email: req.body.Email,
-        Birthday: req.body.Birthday
-      })
-        .then((user) => {
-          res.status(201).json(user);
-        })
-        .catch((error) => {
-          console.error(error);
-          res.status(500).send('Error: ' + error);
-        });
+
+//Creat a new user and save it to the database
+app.post('/register', async (req, res) => {
+  try {
+    const existingUser = await Users.findOne({ username: req.body.username });
+    if (existingUser) {
+      return res.status(400).send(req.body.username + ' user already exists');
     }
-  });
+
+    // Validate input data
+    // ...
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+
+    // Create a new User object
+    const newUser = new Users({
+      username: req.body.username,
+      password: hashedPassword,
+      email: req.body.email,
+      birthday: req.body.birthday
+    });
+
+    // Save the new user to the database
+    const savedUser = await newUser.save();
+
+    res.status(201).json(savedUser);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error: ' + error.message);
+  }
 });
+
+
+
 
 //allows users to save movies to their favorites!
 app.post('/users/:userName/movies/:MovieID', (req, res) => {
@@ -295,7 +316,7 @@ app.get('/documentation', (req, res) => {
   });
 
 
-//if everything functions correctly this message is logged from port 3000 thats listening.
+//if everything functions correctly this message is logged from port 8080 thats listening.
 app.listen(8080, () => {
   console.log('Your app is listening on port 8080.');
 });
