@@ -255,3 +255,8 @@
 ::1 - - [19/May/2023:14:07:25 +0000] "DELETE /movies/6450d243aa52f496320c11c6 HTTP/1.1" 400 38 "-" "PostmanRuntime/7.32.2"
 ::1 - - [19/May/2023:14:08:38 +0000] "DELETE /movies HTTP/1.1" 404 148 "-" "PostmanRuntime/7.32.2"
 ::1 - - [19/May/2023:14:08:45 +0000] "GET /movies HTTP/1.1" 200 21872 "-" "PostmanRuntime/7.32.2"
+::1 - - [19/May/2023:14:14:20 +0000] "GET /movies/The%20Dark%20Knight HTTP/1.1" 200 4 "-" "PostmanRuntime/7.32.2"
+::1 - - [19/May/2023:14:14:42 +0000] "GET /movies/ HTTP/1.1" 200 21872 "-" "PostmanRuntime/7.32.2"
+::1 - - [19/May/2023:14:14:56 +0000] "GET /movies/Action HTTP/1.1" 200 4 "-" "PostmanRuntime/7.32.2"
+::1 - - [19/May/2023:14:15:03 +0000] "GET /movies HTTP/1.1" 200 21872 "-" "PostmanRuntime/7.32.2"
+::1 - - [19/May/2023:14:15:26 +0000] "GET /movies/644a30d0a33d5b41dd203af6 HTTP/1.1" 200 4 "-" "PostmanRuntime/7.32.2"
