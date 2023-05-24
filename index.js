@@ -1,8 +1,10 @@
 const express = require('express');
 const morgan = require('morgan');
+const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const app = express();
 const fs = require('fs');
+const passport = require('passport');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const uuid = require('uuid');
@@ -14,11 +16,14 @@ const Models = require('./models.js');
 const Movies = Models.Movie;
 const Users = Models.User;
 
+
+
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {
   flags: 'a'
 });
 
 const saltRounds = 10; // Number of salt rounds for bcrypt hashing
+
 
 
 //Middleware
@@ -27,11 +32,12 @@ app.use(morgan('combined', {
   stream: accessLogStream
 }));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(passport.initialize());
 
 
 
 let auth = require('./auth')(app);
-const passport = require('passport');
 require('./passport.js');
 
 mongoose.connect('mongodb://localhost:27017/mymoviesDB',  
@@ -41,10 +47,12 @@ mongoose.connect('mongodb://localhost:27017/mymoviesDB',
 
 
 // GET requests
+
 //this setups a message once the user goes to the home page of the website.
 app.get('/', (request, response) => {
   response.send('Welcome to mymoviesDB!');
 });
+
 
 //returns a JSON object of all current users
 app.get('/users', (req, res) => {
@@ -72,7 +80,7 @@ app.get('/users/:userName', (req, res) => {
 
 
 //gets a JSON object of all the current movies on the server
-app.get('/movies', passport.authenticate('jwt', { session: false}),
+app.get('/movies', passport.authenticate('jwt', { session: false }),
  (req, res) => {
   Movies.find()
     .then((movies) => {
@@ -122,37 +130,59 @@ app.get('/movies/directors/:directorsName', (req, res) => {
     });
 });
 
+/*// Create a new user
+app.post('/users', (req, res) => {
+  // Hash the password using bcrypt
+  const hashedPassword = bcrypt.hashSync(req.body.Password, saltRounds);
 
-//Creat a new user and save it to the database
-app.post('/register', async (req, res) => {
-  try {
-    const existingUser = await Users.findOne({ username: req.body.username });
-    if (existingUser) {
-      return res.status(400).send(req.body.username + ' user already exists');
-    }
+  // Create a new User object
+  const newUser = new Users({
+    username: req.body.Username,
+    password: hashedPassword,
+    email: req.body.Email,
+    birthday: req.body.Birthday
+  });
 
-    // Validate input data
-    // ...
-
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
-
-    // Create a new User object
-    const newUser = new Users({
-      username: req.body.username,
-      password: hashedPassword,
-      email: req.body.email,
-      birthday: req.body.birthday
+  // Save the new user to the database
+  newUser.save()
+    .then((user) => {
+      res.status(201).json(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
     });
+});*/
 
-    // Save the new user to the database
-    const savedUser = await newUser.save();
+// Create a new user
+app.post('/users', (req, res) => {
+  // Hash the password using bcrypt
+  const hashedPassword = bcrypt.hashSync(req.body.Password, saltRounds);
 
-    res.status(201).json(savedUser);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error: ' + error.message);
-  }
+  // Create a new User object
+  const newUser = new Users({
+    username: req.body.Username,
+    password: hashedPassword,
+    email: req.body.Email,
+    birthday: req.body.Birthday
+  });
+
+  // Save the new user to the database
+  newUser.save()
+    .then((user) => {
+      // Generate a JWT
+      const token = jwt.sign({ username: user.username }, 'your_secret_key');
+
+      // Send the JWT as a response
+      res.status(201).json({
+        token: token,
+        user: user
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
 
