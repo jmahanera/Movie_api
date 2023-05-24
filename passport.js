@@ -45,7 +45,7 @@ passport.use(new JWTStrategy({
       });
   }));*/
 
-  const passport = require('passport');
+const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const Models = require('./models.js');
 const passportJWT = require('passport-jwt');
