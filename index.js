@@ -1,29 +1,31 @@
 const express = require('express');
+const app = express();
 const morgan = require('morgan');
+const uuid = require('uuid');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
-const app = express();
 const fs = require('fs');
-const jwtSecret = 'your_jwt_secret';
 const passport = require('passport');
 const path = require('path');
 const bcrypt = require('bcrypt');
-const uuid = require('uuid');
 
 
 const mongoose = require('mongoose');
 const Models = require('./models.js');
 
-const Movies = Models.Movie;
-const Users = Models.User;
+const Movies = require('./models/movies');
+const Users = require('./models/users');
 
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {
   flags: 'a'
 });
 
-const saltRounds = 10; // Number of salt rounds for bcrypt hashing
+const saltRounds = 20; // Number of salt rounds for bcrypt hashing
 
-
+mongoose.connect('mongodb://localhost:27017/mymoviesDB',  
+{ useNewUrlParser: true, 
+  useUnifiedTopology: true 
+});
 
 //Middleware
 app.use(express.static('public'));
@@ -34,15 +36,43 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(passport.initialize());
 
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
 
 
-let auth = require('./auth')(app);
+require('./auth')(app);
+const jwtSecret = 'jwtSecret';
 require('./passport.js');
 
 mongoose.connect('mongodb://localhost:27017/mymoviesDB',  
 { useNewUrlParser: true, 
   useUnifiedTopology: true 
 });
+
+// Define JWT strategy options
+const jwtOptions = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: 'jwtSecret'
+};
+
+// Configure the JWT strategy
+passport.use(
+  new JwtStrategy(jwtOptions, (jwtPayload, done) => {
+    Users.findOne({ username: jwtPayload.username }, (err, user) => {
+      if (err) {
+        return done(err, false);
+      }
+      if (user) {
+        return done(null, user);
+      } else {
+        return done(null, false);
+      }
+    });
+  })
+);
+
+// Add passport initialize middleware
+app.use(passport.initialize());
 
 
 // GET requests
@@ -154,6 +184,7 @@ app.post('/users', (req, res) => {
 });*/
 
 // Create a new user
+// Create a new user
 app.post('/users', (req, res) => {
   // Hash the password using bcrypt
   const hashedPassword = bcrypt.hashSync(req.body.Password, saltRounds);
@@ -170,7 +201,7 @@ app.post('/users', (req, res) => {
   newUser.save()
     .then((user) => {
       // Generate a JWT
-      const token = jwt.sign({ username: user.username }, 'your_secret_key');
+      const token = jwt.sign({ username: user.username }, jwtSecret);
 
       // Send the JWT as a response
       res.status(201).json({
@@ -183,6 +214,7 @@ app.post('/users', (req, res) => {
       res.status(500).send('Error: ' + err);
     });
 });
+
 
 
 
@@ -316,24 +348,23 @@ app.delete('/movies/:movieId', (req, res) => {
 });
 
 
-
-
 // Add a movie to a user's list of favorites
 app.post('/users/:Username/movies/:MovieID', (req, res) => {
-  Users.findOneAndUpdate({ Username: req.params.Username }, {
-     $push: { FavoriteMovies: req.params.MovieID }
-   },
-   { new: true }, // This line makes sure that the updated document is returned//
-  (err, updatedUser) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    } else {
+  Users.findOneAndUpdate(
+    { Username: req.params.Username },
+    {
+      $push: { FavoriteMovies: req.params.MovieID }
+    },
+    { new: true }, // This line makes sure that the updated document is returned
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send('Error: ' + err);
+      }
       res.json(updatedUser);
     }
-  });
+  );
 });
-
 
 app.get('/documentation', (req, res) => {                  
   res.sendFile('public/documentation.html', { root: __dirname });
