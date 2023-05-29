@@ -1,3 +1,4 @@
+// Import required modules
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
@@ -10,22 +11,23 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 
 
+// Generate a UUID
+const myUUID = uuid.v4();
+console.log(myUUID);
+
+// Import Mongoose and models
 const mongoose = require('mongoose');
 const Models = require('./models.js');
+const Movies = Models.Movie;
+const Users = Models.User;
 
-const Movies = require('./models/movies');
-const Users = require('./models/users');
-
+// Create a write stream for logging
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {
   flags: 'a'
 });
 
-const saltRounds = 20; // Number of salt rounds for bcrypt hashing
-
-mongoose.connect('mongodb://localhost:27017/mymoviesDB',  
-{ useNewUrlParser: true, 
-  useUnifiedTopology: true 
-});
+// Number of salt rounds for bcrypt hashing
+const saltRounds = 20; 
 
 //Middleware
 app.use(express.static('public'));
@@ -36,12 +38,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(passport.initialize());
 
+// Configure passport for JWT authentication
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 
 
 require('./auth')(app);
-const jwtSecret = 'jwtSecret';
+const jwtSecret = 'your_jwt_secret';
 require('./passport.js');
 
 mongoose.connect('mongodb://localhost:27017/mymoviesDB',  
@@ -49,10 +52,10 @@ mongoose.connect('mongodb://localhost:27017/mymoviesDB',
   useUnifiedTopology: true 
 });
 
-// Define JWT strategy options
+// Configure JWT strategy options
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: 'jwtSecret'
+  secretOrKey: 'your_jwt_secret'
 };
 
 // Configure the JWT strategy
@@ -214,9 +217,6 @@ app.post('/users', (req, res) => {
       res.status(500).send('Error: ' + err);
     });
 });
-
-
-
 
 
  //allows users to save movies to their favorites!
