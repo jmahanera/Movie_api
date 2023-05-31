@@ -348,5 +348,5 @@ app.get('/documentation', (req, res) => {
 
 //if everything functions correctly this message is logged from port 8080 thats listening.
 app.listen(8080, () => {
-  console.log('Your app is listening on port 8080.');
+  console.log('Your Movie app is listening on port 8080.');
 });
