@@ -10,10 +10,9 @@ const passport = require('passport');
 const path = require('path');
 const bcrypt = require('bcrypt');
 
-
 // Generate a UUID
 const myUUID = uuid.v4();
-console.log(myUUID);
+document.write(myUUID);
 
 // Import Mongoose and models
 const mongoose = require('mongoose');
@@ -29,7 +28,7 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {
 // Number of salt rounds for bcrypt hashing
 const saltRounds = 20; 
 
-//Middleware
+// Middleware
 app.use(express.static('public'));
 app.use(morgan('combined', {
   stream: accessLogStream
@@ -41,7 +40,6 @@ app.use(passport.initialize());
 // Configure passport for JWT authentication
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
-
 
 require('./auth')(app);
 const jwtSecret = 'your_jwt_secret';
@@ -77,17 +75,15 @@ passport.use(jwtStrategy);
 // Add passport initialize middleware
 app.use(passport.initialize());
 
-
 // GET requests
 
-//this setups a message once the user goes to the home page of the website.
+// This sets up a message once the user goes to the home page of the website.
 app.get('/', (request, response) => {
   response.send('Welcome to mymoviesDB!');
 });
 
-
 // Get all users
-app.get('/users', passport.authenticate('jwt', { session: false }),(req, res) => {
+app.get('/users', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.find()
     .then((users) => {
       res.status(201).json(users);
@@ -98,9 +94,9 @@ app.get('/users', passport.authenticate('jwt', { session: false }),(req, res) =>
     });
 });
 
-//get a user by username
-app.get('/users/:userName', (req, res) => {
-  Users.findOne({ username: req.body.userName })
+// Get a user by username
+app.get('/users/:username', (req, res) => {
+  Users.findOne({ username: req.params.username })
     .then((user) => {
       res.status(200).json(user);
     })
@@ -110,10 +106,8 @@ app.get('/users/:userName', (req, res) => {
     });
 });
 
-
-//gets a JSON object of all the current movies on the server
-app.get('/movies', passport.authenticate('jwt', { session: false }),
- (req, res) => {
+// Gets a JSON object of all the current movies on the server
+app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.find()
     .then((movies) => {
       res.status(201).json(movies);
@@ -123,7 +117,6 @@ app.get('/movies', passport.authenticate('jwt', { session: false }),
       res.status(500).send('Error: ' + err);
     });
 });
-
 //searches for movies by their title and returns a  single JSON object
 app.get('/movies/:title', passport.authenticate('jwt', { session: false }),(req, res) => {
   Movies.findOne({ Title: req.params.title })
