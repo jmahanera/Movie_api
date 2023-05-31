@@ -12,7 +12,7 @@ const bcrypt = require('bcrypt');
 
 // Generate a UUID
 const myUUID = uuid.v4();
-document.write(myUUID);
+console.log(myUUID);
 
 // Import Mongoose and models
 const mongoose = require('mongoose');
@@ -154,6 +154,7 @@ app.get('/movies/genres/:genreName', passport.authenticate('jwt', { session: fal
         res.status(500).send('Error: ' + err);
       });
   });
+
 
 // Create a new user
 app.post('/users', (req, res) => {
