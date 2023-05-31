@@ -58,22 +58,6 @@ const jwtOptions = {
   secretOrKey: 'your_jwt_secret'
 };
 
-// Configure the JWT strategy
-passport.use(
-  new JwtStrategy(jwtOptions, (jwtPayload, done) => {
-    Users.findOne({ username: jwtPayload.username }, (err, user) => {
-      if (err) {
-        return done(err, false);
-      }
-      if (user) {
-        return done(null, user);
-      } else {
-        return done(null, false);
-      }
-    });
-  })
-);
-
 // Add passport initialize middleware
 app.use(passport.initialize());
 
