@@ -155,31 +155,6 @@ app.get('/movies/genres/:genreName', passport.authenticate('jwt', { session: fal
       });
   });
 
-/*// Create a new user
-app.post('/users', (req, res) => {
-  // Hash the password using bcrypt
-  const hashedPassword = bcrypt.hashSync(req.body.Password, saltRounds);
-
-  // Create a new User object
-  const newUser = new Users({
-    username: req.body.Username,
-    password: hashedPassword,
-    email: req.body.Email,
-    birthday: req.body.Birthday
-  });
-
-  // Save the new user to the database
-  newUser.save()
-    .then((user) => {
-      res.status(201).json(user);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});*/
-
-// Create a new user
 // Create a new user
 app.post('/users', (req, res) => {
   // Hash the password using bcrypt
