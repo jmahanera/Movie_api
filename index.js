@@ -9,7 +9,6 @@ const fs = require('fs');
 const passport = require('passport');
 const path = require('path');
 const bcrypt = require('bcrypt');
-const axios = require('axios');
 
 // Generate a UUID
 const myUUID = uuid.v4();
@@ -83,21 +82,7 @@ app.get('/', (request, response) => {
   response.send('Welcome to mymoviesDB!');
 });
 
-// Make a GET request to the movie genres endpoint
-axios.get('http://localhost:8080/movies/genres/:genreName', {
-  headers: {
-    Authorization: 'Bearer <JWT_TOKEN>'
-  }
-})
-  .then((response) => {
-    // Process the response data
-    const genres = response.data;
-    // Do something with the genres
-    console.log(genres);
-  })
-  .catch((error) => {
-    console.error(error);
-  });
+
 
 // Get all users
 app.get('/users', passport.authenticate('jwt', { session: false }), (req, res) => {
