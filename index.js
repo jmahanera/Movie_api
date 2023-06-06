@@ -25,6 +25,8 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {
   flags: 'a'
 });
 
+const { check, validationResult } = require('express-validator');
+
 // Number of salt rounds for bcrypt hashing
 const saltRounds = 20; 
 
@@ -40,6 +42,19 @@ app.use(passport.initialize());
 // Configure passport for JWT authentication
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
+const cors = require('cors');
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.indexOf(origin) === -1){ // If a specific origin isn’t found on the list of allowed origins
+      let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
+      return callback(new Error(message ), false);
+    }
+    return callback(null, true);
+  }
+}));
 
 require('./auth')(app);
 const jwtSecret = 'your_jwt_secret';
@@ -159,35 +174,52 @@ app.get('/movies/genres/:genreName', passport.authenticate('jwt', { session: fal
 
 
 // Create a new user
-app.post('/users', (req, res) => {
-  // Hash the password using bcrypt
-  const hashedPassword = bcrypt.hashSync(req.body.Password, saltRounds);
+app.post('/users',
+  // Validation logic here for request
+  //you can either use a chain of methods like .not().isEmpty()
+  //which means "opposite of isEmpty" in plain english "is not empty"
+  //or use .isLength({min: 5}) which means
+  //minimum value of 5 characters are only allowed
+  [
+    check('Username', 'Username is required').isLength({min: 5}),
+    check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+    check('Password', 'Password is required').not().isEmpty(),
+    check('Email', 'Email does not appear to be valid').isEmail()
+  ], (req, res) => {
 
-  // Create a new User object
-  const newUser = new Users({
-    username: req.body.Username,
-    password: hashedPassword,
-    email: req.body.Email,
-    birthday: req.body.Birthday
-  });
+  // check the validation object for errors
+    let errors = validationResult(req);
 
-  // Save the new user to the database
-  newUser.save()
-    .then((user) => {
-      // Generate a JWT
-      const token = jwt.sign({ username: user.username }, jwtSecret);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
 
-      // Send the JWT as a response
-      res.status(201).json({
-        token: token,
-        user: user
+    let hashedPassword = Users.hashPassword(req.body.Password);
+    Users.findOne({ Username: req.body.Username }) // Search to see if a user with the requested username already exists
+      .then((user) => {
+        if (user) {
+          //If the user is found, send a response that it already exists
+          return res.status(400).send(req.body.Username + ' already exists');
+        } else {
+          Users
+            .create({
+              Username: req.body.Username,
+              Password: hashedPassword,
+              Email: req.body.Email,
+              Birthday: req.body.Birthday
+            })
+            .then((user) => { res.status(201).json(user) })
+            .catch((error) => {
+              console.error(error);
+              res.status(500).send('Error: ' + error);
+            });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).send('Error: ' + error);
       });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
+  });
 
 
  //allows users to save movies to their favorites!
@@ -349,6 +381,7 @@ app.get('/documentation', (req, res) => {
 
 
 //if everything functions correctly this message is logged from port 8080 thats listening.
-app.listen(8080, () => {
-  console.log('Your Movie app is listening on port 8080.');
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0',() => {
+ console.log('Listening on Port ' + port);
 });
