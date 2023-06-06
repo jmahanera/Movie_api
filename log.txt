@@ -668,3 +668,5 @@
 ::1 - - [01/Jun/2023:09:06:04 +0000] "GET /movies/genre/003 HTTP/1.1" 404 155 "-" "PostmanRuntime/7.32.2"
 ::1 - - [01/Jun/2023:09:06:13 +0000] "GET /movies HTTP/1.1" 201 21872 "-" "PostmanRuntime/7.32.2"
 ::1 - - [01/Jun/2023:09:24:15 +0000] "GET /movies/The%20Avengers HTTP/1.1" 200 4 "-" "PostmanRuntime/7.32.2"
+::1 - - [05/Jun/2023:07:33:11 +0000] "GET /movies/The%20Avengers HTTP/1.1" 200 4 "-" "PostmanRuntime/7.32.2"
+::1 - - [05/Jun/2023:07:33:22 +0000] "GET /movies/ HTTP/1.1" 201 21872 "-" "PostmanRuntime/7.32.2"
