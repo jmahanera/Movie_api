@@ -9,6 +9,7 @@ const fs = require('fs');
 const passport = require('passport');
 const path = require('path');
 const bcrypt = require('bcrypt');
+const { MongoClient } = require('mongodb');
 
 // Generate a UUID
 const myUUID = uuid.v4();
@@ -43,7 +44,6 @@ app.use(passport.initialize());
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const cors = require('cors');
-let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -96,8 +96,6 @@ app.use(passport.initialize());
 app.get('/', (request, response) => {
   response.send('Welcome to mymoviesDB!');
 });
-
-
 
 // Get all users
 app.get('/users', passport.authenticate('jwt', { session: false }), (req, res) => {
