@@ -9,7 +9,8 @@ const fs = require('fs');
 const passport = require('passport');
 const path = require('path');
 const bcrypt = require('bcrypt');
-const { MongoClient } = require('mongodb');
+const { check, validationResult } = require('express-validator');
+
 
 // Generate a UUID
 const myUUID = uuid.v4();
@@ -26,7 +27,6 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {
   flags: 'a'
 });
 
-const { check, validationResult } = require('express-validator');
 
 // Number of salt rounds for bcrypt hashing
 const saltRounds = 20; 
@@ -171,32 +171,29 @@ app.get('/movies/genres/:genreName', passport.authenticate('jwt', { session: fal
   });
 
 
-// Create a new user
-app.post('/users',
-  // Validation logic here for request
-  //you can either use a chain of methods like .not().isEmpty()
-  //which means "opposite of isEmpty" in plain english "is not empty"
-  //or use .isLength({min: 5}) which means
-  //minimum value of 5 characters are only allowed
-  [
-    check('Username', 'Username is required').isLength({min: 5}),
-    check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
-    check('Password', 'Password is required').not().isEmpty(),
-    check('Email', 'Email does not appear to be valid').isEmail()
-  ], (req, res) => {
 
-  // check the validation object for errors
+
+  app.post('/users',
+  // Validation logic here for request
+  [
+    check('Username', 'Username is required').notEmpty(),
+    check('Password', 'Password is required').notEmpty(),
+    check('Email', 'Email is required').notEmpty().isEmail(),
+    check('Birthday', 'Birthday is required').notEmpty()
+  ],
+  (req, res) => {
+    // check the validation object for errors
     let errors = validationResult(req);
 
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
 
-    let hashedPassword = Users.hashPassword(req.body.Password);
-    Users.findOne({ Username: req.body.Username }) // Search to see if a user with the requested username already exists
+    let hashedPassword = hashPassword(req.body.Password); // Use the hashPassword function
+
+    Users.findOne({ Username: req.body.Username })
       .then((user) => {
         if (user) {
-          //If the user is found, send a response that it already exists
           return res.status(400).send(req.body.Username + ' already exists');
         } else {
           Users
@@ -218,6 +215,15 @@ app.post('/users',
         res.status(500).send('Error: ' + error);
       });
   });
+
+// Function to hash the password using bcrypt
+function hashPassword(password) {
+  const salt = bcrypt.genSaltSync(saltRounds);
+  return bcrypt.hashSync(password, salt);
+}
+
+// ...
+
 
 
  //allows users to save movies to their favorites!
