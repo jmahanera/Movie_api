@@ -683,3 +683,4 @@
 127.0.0.1 - - [08/Jun/2023:10:21:55 +0000] "GET /movies/The%20Godfather HTTP/1.1" 200 4 "-" "PostmanRuntime/7.32.2"
 127.0.0.1 - - [08/Jun/2023:10:22:14 +0000] "GET /movies HTTP/1.1" 201 21872 "-" "PostmanRuntime/7.32.2"
 127.0.0.1 - - [08/Jun/2023:10:22:49 +0000] "GET /movies HTTP/1.1" 201 21872 "-" "PostmanRuntime/7.32.2"
+127.0.0.1 - - [12/Jun/2023:06:45:25 +0000] "GET /movies HTTP/1.1" 201 21872 "-" "PostmanRuntime/7.32.2"
