@@ -100,7 +100,7 @@ app.use(passport.initialize());
 
 // This sets up a message once the user goes to the home page of the website.
 app.get('/', (request, response) => {
-  response.send('Welcome to mymoviesDB Operating under the brand name MYMOVIENOSTALGIE!');
+  response.send('Welcome to mymoviesDB Operating under the brand name MOVIENOSTALGIE!');
 });
 
 // Get all users
