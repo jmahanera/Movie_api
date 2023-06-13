@@ -60,7 +60,11 @@ require('./auth')(app);
 const jwtSecret = 'your_jwt_secret';
 require('./passport.js');
 
-mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+const uri = "mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/?retryWrites=true&w=majority";
+
+
+//mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 /*mongoose.connect('mongodb://localhost:27017/mymoviesDB',  
 { useNewUrlParser: true, 
@@ -96,7 +100,7 @@ app.use(passport.initialize());
 
 // This sets up a message once the user goes to the home page of the website.
 app.get('/', (request, response) => {
-  response.send('Welcome to mymoviesDB!');
+  response.send('Welcome to mymoviesDB Operating under the brand name MYMOVIENOSTALGIE!');
 });
 
 // Get all users
@@ -386,7 +390,7 @@ app.get('/documentation', (req, res) => {
   });
 
 
-//if everything functions correctly this message is logged from port 8080 thats listening.
+//if everything functions correctly this message is logged from port 3000 thats listening.
 const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0',() => {
  console.log('Listening on Port ' + port);
