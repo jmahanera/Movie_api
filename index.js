@@ -60,10 +60,12 @@ require('./auth')(app);
 const jwtSecret = 'your_jwt_secret';
 require('./passport.js');
 
-mongoose.connect('mongodb://localhost:27017/mymoviesDB',  
+mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+/*mongoose.connect('mongodb://localhost:27017/mymoviesDB',  
 { useNewUrlParser: true, 
   useUnifiedTopology: true 
-});
+});*/
 
 // Configure JWT strategy options
 const jwtOptions = {
