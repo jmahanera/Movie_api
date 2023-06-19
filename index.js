@@ -3,21 +3,20 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const uuid = require('uuid');
-const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const passport = require('passport');
 const path = require('path');
-const bcrypt = require('bcrypt');
-const dotenv = require('dotenv');
 const { check, validationResult } = require('express-validator');
 
-// use .env file to hide sensitive data
-dotenv.config();
 
 // Generate a UUID
 const myUUID = uuid.v4();
 console.log(myUUID);
+
+// Logger Initiated
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
+app.use(morgan('combined', { stream: accessLogStream }));
 
 // Import Mongoose and models
 const mongoose = require('mongoose');
@@ -25,11 +24,23 @@ const Models = require('./models.js');
 const Movies = Models.Movie;
 const Users = Models.User;
 
+const uri = 'mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replace with your MongoDB connection string
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('Connected to the database');
+    // Start your server or perform other operations
+  })
+  .catch((error) => {
+    console.error('Error connecting to the database:', error);
+  });
 
-// Create a write stream for logging
-const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {
-  flags: 'a',
-});
+  /*mongoose.connect(process.env.movies_uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });*/
+
+
+
 
 // Number of salt rounds for bcrypt hashing
 const saltRounds = 20;
@@ -47,11 +58,11 @@ app.use(passport.initialize());
 const passportJwt = require('passport-jwt');
 const JwtStrategy = passportJwt.Strategy;
 const ExtractJwt = passportJwt.ExtractJwt;
+
 const cors = require('cors');
+let allowedOrigins = ['http://localhost:8080', 'https://movienostalgie.herokuapp.com'];
 app.use(cors());
 
-// Use Cors
-const allowedOrigins = ['http://movieCluster.herokuapp.com', 'https://example.com'];
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
@@ -60,88 +71,22 @@ app.use(cors({
       return callback(new Error(message), false);
     }
     return callback(null, true);
-  },
+  }
 }));
 
 require('./auth')(app);
 const jwtSecret = 'jwtSecret';
 require('./passport.js');
 
-// Function to hash the password using bcrypt
-function hashPassword(password) {
-  const salt = bcrypt.genSaltSync(saltRounds);
-  return bcrypt.hashSync(password, salt);
-}
-
-/*mongoose.connect(process.env.CONNECTION_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});*/
-
-const uri = 'mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replace with your MongoDB connection string
-
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    console.log('Connected to the database');
-    // Start your server or perform other operations
-  })
-  .catch((error) => {
-    console.error('Error connecting to the database:', error);
-  });
-
-
-//mongoose.connect('mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
-//mongodb+srv://jula:<password>@moviecluster.1wliibn.mongodb.net/
-//mongoose.createConnection('mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
-
-// Make sure the 'uri' parameter is defined and is a string
-/*const uri = 'jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB'; // Replace with your actual MongoDB URI
-
-if (!uri || typeof uri !== 'string') {
-  console.error("Invalid MongoDB URI. Please provide a valid string.");
-  process.exit(1); // Exit the application or handle the error appropriately
-}
-
-// Connect to MongoDB using Mongoose
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    console.log("Connected to MongoDB successfully!");
-    // Proceed with your application logic here
-  })
-  .catch((error) => {
-    console.error("Failed to connect to MongoDB:", error);
-    // Handle the connection error appropriately
-  });*/
-
-
-const jwtOptions = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: jwtSecret,
-};
-
-passport.use(new JwtStrategy(jwtOptions, (jwtPayload, done) => {
-  Users.findById(jwtPayload.id)
-    .then(user => {
-      if (user) {
-        return done(null, user);
-      } else {
-        return done(null, false);
-      }
-    })
-    .catch(error => {
-      return done(error, false);
-    });
-}));
-
 // GET requests
 
 // This sets up a message once the user goes to the home page of the website.
-app.get('/', (request, response) => {
+app.get('/', (_request, response) => {
   response.send('Welcome to mymoviesDB Operating under the brand name MOVIENOSTALGIE!');
 });
 
 // Get all users
-app.get('/users', passport.authenticate('jwt', { session: false }), (res) => {
+app.get('/users', passport.authenticate('jwt', { session: false }), (_req, res) => {
   Users.find()
     .then((users) => {
       res.status(200).json(users);
@@ -154,7 +99,7 @@ app.get('/users', passport.authenticate('jwt', { session: false }), (res) => {
 
 
 // Gets a JSON object of all the current movies on the server
-app.get('/movies', passport.authenticate('jwt', { session: false }), (res) => {
+app.get('/movies', passport.authenticate('jwt', { session: false }), (_req, res) => {
   Movies.find()
     .then((movies) => {
       res.status(201).json(movies);
@@ -201,49 +146,42 @@ app.get('/movies/genres/:genreName', passport.authenticate('jwt', { session: fal
       });
   });
 
-// Create new users and save them
-app.post('/users', passport.authenticate('jwt', { session: false }),
-  // Validation logic here for request
-  [
-    check('Username', 'Username is required').notEmpty(),
-    check('Password', 'Password is required').notEmpty(),
-    check('Email', 'Email is required').notEmpty().isEmail(),
-    check('Birthday', 'Birthday is required').notEmpty()
-  ],
-  (req, res) => {
-    // check the validation object for errors
-    let errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
-
-    let hashedPassword = hashPassword(req.body.Password); // Use the hashPassword function
-
-    Users.findOne({ Username: req.body.Username })
-      .then((user) => {
-        if (user) {
-          return res.status(400).send(req.body.Username + ' already exists');
-        } else {
-          Users
-            .create({
-              Username: req.body.Username,
-              Password: hashedPassword,
-              Email: req.body.Email,
-              Birthday: req.body.Birthday
-            })
-            .then((user) => { res.status(201).json(user) })
-            .catch((error) => {
-              console.error(error);
-              res.status(500).send('Error: ' + error);
-            });
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        res.status(500).send('Error: ' + error);
-      });
-  });
+//creating a new user
+app.post('/users', [
+  check('username', 'Username is required').isLength({ min: 5 }),
+  check('username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+  check('password', 'Password is required').not().isEmpty(),
+  check('email', 'Email does not appear to be valid').isEmail()
+], (req, res) => {
+  let errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+  let hashedPassword = Users.hashPassword(req.body.password);
+  Users.findOne({ username: req.body.username })
+    .then((user) => {
+      if (user) {
+        return res.status(400).send(req.body.username + ' already exists');
+      } else {
+        Users
+          .create({
+            username: req.body.username,
+            password: hashedPassword,
+            email: req.body.email,
+            birthDate: req.body.birthDate
+          })
+          .then((user) => { res.status(201).json(user) })
+          .catch((error) => {
+            console.error(error);
+            res.status(500).send('Error: ' + error);
+          })
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
+});
 
 
  //allows users to save movies to their favorites!
@@ -375,19 +313,19 @@ app.delete('/movies/:movieId', (req, res) => {
 });
 
 
-app.get('/documentation', (req, res) => {                  
+app.get('/documentation', (_req, res) => {                  
   res.sendFile('public/documentation.html', { root: __dirname });
   });
     
    //this is a error code to dectect erros in the code above.
-  app.use((err, req, res, next) => {
+  app.use((err, _req, res, _next) => {
   console.error(err.stack);
   res.status(500).send('There was an error. Please try again later.');
   });
 
 
-//if everything functions correctly this message is logged from port 3000 thats listening.
-const port = process.env.PORT || 3000;
+//if everything functions correctly this message is logged from port 8080 thats listening.
+const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0',() => {
  console.log('Listening on Port ' + port);
 });
