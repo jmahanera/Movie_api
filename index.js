@@ -9,8 +9,11 @@ const fs = require('fs');
 const passport = require('passport');
 const path = require('path');
 const bcrypt = require('bcrypt');
+const dotenv = require('dotenv');
 const { check, validationResult } = require('express-validator');
 
+// use .env file to hide sensitive data
+dotenv.config();
 
 // Generate a UUID
 const myUUID = uuid.v4();
@@ -18,83 +21,104 @@ console.log(myUUID);
 
 // Import Mongoose and models
 const mongoose = require('mongoose');
+mongoose.connect()
 const Models = require('./models.js');
 const Movies = Models.Movie;
 const Users = Models.User;
 
+
 // Create a write stream for logging
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {
-  flags: 'a'
+  flags: 'a',
 });
 
-
 // Number of salt rounds for bcrypt hashing
-const saltRounds = 20; 
+const saltRounds = 20;
 
 // Middleware
 app.use(express.static('public'));
 app.use(morgan('combined', {
-  stream: accessLogStream
+  stream: accessLogStream,
 }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(passport.initialize());
 
 // Configure passport for JWT authentication
-const JwtStrategy = require('passport-jwt').Strategy;
-const ExtractJwt = require('passport-jwt').ExtractJwt;
+const passportJwt = require('passport-jwt');
+const JwtStrategy = passportJwt.Strategy;
+const ExtractJwt = passportJwt.ExtractJwt;
 const cors = require('cors');
+app.use(cors());
 
+// Use Cors
+const allowedOrigins = ['http://movieCluster.herokuapp.com', 'https://example.com'];
 app.use(cors({
   origin: (origin, callback) => {
-    if(!origin) return callback(null, true);
-    if(allowedOrigins.indexOf(origin) === -1){ // If a specific origin isn’t found on the list of allowed origins
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
       let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
-      return callback(new Error(message ), false);
+      return callback(new Error(message), false);
     }
     return callback(null, true);
-  }
+  },
 }));
 
 require('./auth')(app);
-const jwtSecret = 'your_jwt_secret';
+const jwtSecret = 'jwtSecret';
 require('./passport.js');
 
+// Function to hash the password using bcrypt
+function hashPassword(password) {
+  const salt = bcrypt.genSaltSync(saltRounds);
+  return bcrypt.hashSync(password, salt);
+}
 
-const uri = "mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/?retryWrites=true&w=majority";
-
-
-//mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-
-/*mongoose.connect('mongodb://localhost:27017/mymoviesDB',  
-{ useNewUrlParser: true, 
-  useUnifiedTopology: true 
+/*mongoose.connect(process.env.CONNECTION_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 });*/
+//mongodb+srv://jula:<password>@moviecluster.1wliibn.mongodb.net/
+mongoose.createConnection('mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
 
-// Configure JWT strategy options
+// Make sure the 'uri' parameter is defined and is a string
+/*const uri = 'jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB'; // Replace with your actual MongoDB URI
+
+if (!uri || typeof uri !== 'string') {
+  console.error("Invalid MongoDB URI. Please provide a valid string.");
+  process.exit(1); // Exit the application or handle the error appropriately
+}
+
+// Connect to MongoDB using Mongoose
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log("Connected to MongoDB successfully!");
+    // Proceed with your application logic here
+  })
+  .catch((error) => {
+    console.error("Failed to connect to MongoDB:", error);
+    // Handle the connection error appropriately
+  });*/
+
+
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: 'your_jwt_secret'
+  secretOrKey: jwtSecret,
 };
 
-const jwtStrategy = new JwtStrategy(jwtOptions, (payload, done) => {
-  Users.findOne({ username: payload.username })
-    .then((user) => {
+passport.use(new JwtStrategy(jwtOptions, (jwtPayload, done) => {
+  Users.findById(jwtPayload.id)
+    .then(user => {
       if (user) {
         return done(null, user);
       } else {
         return done(null, false);
       }
     })
-    .catch((err) => {
-      return done(err, false);
+    .catch(error => {
+      return done(error, false);
     });
-});
-
-passport.use(jwtStrategy);
-
-// Add passport initialize middleware
-app.use(passport.initialize());
+}));
 
 // GET requests
 
@@ -107,7 +131,7 @@ app.get('/', (request, response) => {
 app.get('/users', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.find()
     .then((users) => {
-      res.status(201).json(users);
+      res.status(200).json(users);
     })
     .catch((err) => {
       console.error(err);
@@ -115,17 +139,6 @@ app.get('/users', passport.authenticate('jwt', { session: false }), (req, res) =
     });
 });
 
-// Get a user by username
-app.get('/users/:username', (req, res) => {
-  Users.findOne({ username: req.params.username })
-    .then((user) => {
-      res.status(200).json(user);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
 
 // Gets a JSON object of all the current movies on the server
 app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
@@ -151,7 +164,6 @@ app.get('/movies/:title', passport.authenticate('jwt', { session: false }),(req,
 });
 
   
-
 //searches for movies by their genre and returns a JSON object
 app.get('/movies/genres/:genreName', passport.authenticate('jwt', { session: false }),(req, res) => {
   Movies.find({ 'Genre.Name': req.params.genreName })
@@ -176,10 +188,8 @@ app.get('/movies/genres/:genreName', passport.authenticate('jwt', { session: fal
       });
   });
 
-
-
-
-  app.post('/users',
+// Create new users and save them
+app.post('/users', passport.authenticate('jwt', { session: false }),
   // Validation logic here for request
   [
     check('Username', 'Username is required').notEmpty(),
@@ -221,15 +231,6 @@ app.get('/movies/genres/:genreName', passport.authenticate('jwt', { session: fal
         res.status(500).send('Error: ' + error);
       });
   });
-
-// Function to hash the password using bcrypt
-function hashPassword(password) {
-  const salt = bcrypt.genSaltSync(saltRounds);
-  return bcrypt.hashSync(password, salt);
-}
-
-// ...
-
 
 
  //allows users to save movies to their favorites!
@@ -361,24 +362,6 @@ app.delete('/movies/:movieId', (req, res) => {
 });
 
 
-// Add a movie to a user's list of favorites
-app.post('/users/:Username/movies/:MovieID', (req, res) => {
-  Users.findOneAndUpdate(
-    { Username: req.params.Username },
-    {
-      $push: { FavoriteMovies: req.params.MovieID }
-    },
-    { new: true }, // This line makes sure that the updated document is returned
-    (err, updatedUser) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).send('Error: ' + err);
-      }
-      res.json(updatedUser);
-    }
-  );
-});
-
 app.get('/documentation', (req, res) => {                  
   res.sendFile('public/documentation.html', { root: __dirname });
   });
@@ -390,7 +373,7 @@ app.get('/documentation', (req, res) => {
   });
 
 
-//if everything functions correctly this message is logged from port 3000 thats listening.
+//if everything functions correctly this message is logged from port 8080 thats listening.
 const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0',() => {
  console.log('Listening on Port ' + port);
