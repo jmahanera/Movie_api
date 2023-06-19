@@ -21,7 +21,6 @@ console.log(myUUID);
 
 // Import Mongoose and models
 const mongoose = require('mongoose');
-mongoose.connect()
 const Models = require('./models.js');
 const Movies = Models.Movie;
 const Users = Models.User;
@@ -78,8 +77,22 @@ function hashPassword(password) {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });*/
+
+const uri = 'mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replace with your MongoDB connection string
+
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('Connected to the database');
+    // Start your server or perform other operations
+  })
+  .catch((error) => {
+    console.error('Error connecting to the database:', error);
+  });
+
+
+//mongoose.connect('mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
 //mongodb+srv://jula:<password>@moviecluster.1wliibn.mongodb.net/
-mongoose.createConnection('mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
+//mongoose.createConnection('mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Make sure the 'uri' parameter is defined and is a string
 /*const uri = 'jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB'; // Replace with your actual MongoDB URI
@@ -128,7 +141,7 @@ app.get('/', (request, response) => {
 });
 
 // Get all users
-app.get('/users', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get('/users', passport.authenticate('jwt', { session: false }), (res) => {
   Users.find()
     .then((users) => {
       res.status(200).json(users);
@@ -141,7 +154,7 @@ app.get('/users', passport.authenticate('jwt', { session: false }), (req, res) =
 
 
 // Gets a JSON object of all the current movies on the server
-app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get('/movies', passport.authenticate('jwt', { session: false }), (res) => {
   Movies.find()
     .then((movies) => {
       res.status(201).json(movies);
@@ -373,8 +386,8 @@ app.get('/documentation', (req, res) => {
   });
 
 
-//if everything functions correctly this message is logged from port 8080 thats listening.
-const port = process.env.PORT || 8080;
+//if everything functions correctly this message is logged from port 3000 thats listening.
+const port = process.env.PORT || 3000;
 app.listen(port, '0.0.0.0',() => {
  console.log('Listening on Port ' + port);
 });
