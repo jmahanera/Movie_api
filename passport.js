@@ -39,7 +39,7 @@ passport.use(new LocalStrategy({
 // Configuring Passport with JWTStrategy for JSON Web Token authentication
 passport.use(new JWTStrategy({
   jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-  secretOrKey: 'your_jwt_secret'
+  secretOrKey: 'jwtSecret'
 }, (jwtPayload, callback) => {
   /* Finding a user with the provided JWT Payload's _id in the database*/
   return Users.findById(jwtPayload._id)
