@@ -214,6 +214,23 @@ app.post('/users', [
     });
 });
 
+// Endpoint for user login
+app.post('/login', (req, res, next) => {
+  passport.authenticate('local', { session: false }, (error, user, info) => {
+    if (error || !user) {
+      return res.status(400).json({
+        message: 'Authentication failed',
+        user: user
+      });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(user.toJSON(), 'your_jwt_secret');
+
+    return res.json({ user, token });
+  })(req, res, next);
+});
+
 
  //allows users to save movies to their favorites!
  app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { session: false }),(req, res) => {
