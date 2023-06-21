@@ -7,24 +7,24 @@ const jwt = require('jsonwebtoken');
 const path = require('path');
 const passport = require('passport');
 const bodyParser = require('body-parser');
-
 const passportJWT = require('passport-jwt');
-let { check, validationResult } = require('express-validator');
-
-
-uuid = require('uuid'),
-{ check, validationResult } = require('express-validator');
-
-
-// Logger Initiated
-const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
-app.use(morgan('combined', { stream: accessLogStream }))
+const { check, validationResult } = require('express-validator');
+const uuid = require('uuid');
+const cors = require('cors');
 
 // Import Mongoose and models
 const mongoose = require('mongoose');
 const Models = require('./models.js');
 const Movies = Models.Movie;
+const Users = Models.User;
 
+
+// Logger Initiated
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
+app.use(morgan('common'));
+
+
+// Connect to MongoDB
 const uri = 'mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replace with your MongoDB connection string
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
@@ -53,7 +53,6 @@ app.use(passport.initialize());
 // Configure passport for JWT authentication
 LocalStrategy = require('passport-local').Strategy;
 
-let Users = Models.User,
   JWTStrategy = passportJWT.Strategy,
   ExtractJWT = passportJWT.ExtractJwt;
 
@@ -91,7 +90,6 @@ passport.use(new LocalStrategy({
     });
 }));*/
 
-const cors = require('cors');
 let allowedOrigins = ['http://localhost:8080', 'https://movienostalgie.herokuapp.com'];
 app.use(cors());
 
