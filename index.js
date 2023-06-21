@@ -2,27 +2,28 @@
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
-const uuid = require('uuid');
-const bodyParser = require('body-parser');
 const fs = require('fs');
-const passport = require('passport');
+const jwt = require('jsonwebtoken');
 const path = require('path');
-const { check, validationResult } = require('express-validator');
+const passport = require('passport');
+const bodyParser = require('body-parser');
+
+const passportJWT = require('passport-jwt');
+let { check, validationResult } = require('express-validator');
 
 
-// Generate a UUID
-const myUUID = uuid.v4();
-console.log(myUUID);
+uuid = require('uuid'),
+{ check, validationResult } = require('express-validator');
+
 
 // Logger Initiated
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
-app.use(morgan('combined', { stream: accessLogStream }));
+app.use(morgan('combined', { stream: accessLogStream }))
 
 // Import Mongoose and models
 const mongoose = require('mongoose');
 const Models = require('./models.js');
 const Movies = Models.Movie;
-const Users = Models.User;
 
 const uri = 'mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replace with your MongoDB connection string
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -39,25 +40,56 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     useUnifiedTopology: true,
   });*/
 
-
-
-
-// Number of salt rounds for bcrypt hashing
-const saltRounds = 20;
-
 // Middleware
 app.use(express.static('public'));
 app.use(morgan('combined', {
   stream: accessLogStream,
 }));
-app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(passport.initialize());
 
 // Configure passport for JWT authentication
-const passportJwt = require('passport-jwt');
-const JwtStrategy = passportJwt.Strategy;
-const ExtractJwt = passportJwt.ExtractJwt;
+LocalStrategy = require('passport-local').Strategy;
+
+let Users = Models.User,
+  JWTStrategy = passportJWT.Strategy,
+  ExtractJWT = passportJWT.ExtractJwt;
+
+passport.use(new LocalStrategy({
+  usernameField: 'Username',
+  passwordField: 'Password'
+}, (username, password, callback) => {
+  console.log(username + '  ' + password);
+  Users.findOne({ Username: username }, (error, user) => {
+    if (error) {
+      console.log(error);
+      return callback(error);
+    }
+
+    if (!user) {
+      console.log('incorrect username');
+      return callback(null, false, {message: 'Incorrect username or password.'});
+    }
+
+    console.log('finished');
+    return callback(null, user);
+  });
+}));
+
+/*passport.use(new JWTStrategy({
+  jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+  secretOrKey: 'your_jwt_secret'
+}, (jwtPayload, callback) => {
+  return Users.findById(jwtPayload._id)
+    .then((user) => {
+      return callback(null, user);
+    })
+    .catch((error) => {
+      return callback(error)
+    });
+}));*/
 
 const cors = require('cors');
 let allowedOrigins = ['http://localhost:8080', 'https://movienostalgie.herokuapp.com'];
@@ -145,6 +177,7 @@ app.get('/movies/genres/:genreName', passport.authenticate('jwt', { session: fal
         res.status(500).send('Error: ' + err);
       });
   });
+
 
 //creating a new user
 app.post('/users', [
@@ -317,7 +350,7 @@ app.get('/documentation', (_req, res) => {
   res.sendFile('public/documentation.html', { root: __dirname });
   });
     
-   //this is a error code to dectect erros in the code above.
+   //Error handling middleware
   app.use((err, _req, res, _next) => {
   console.error(err.stack);
   res.status(500).send('There was an error. Please try again later.');
