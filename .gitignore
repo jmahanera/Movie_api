@@ -21,3 +21,4 @@ node_modules/
 
 dump/mymoviesDB/movies.bson
 dump/mymoviesDB/movies.json
+docker-compose.yml
