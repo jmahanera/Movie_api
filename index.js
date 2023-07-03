@@ -25,8 +25,8 @@ app.use(morgan('common'));
 
 
 // Connect to MongoDB
-const uri = 'mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replace with your MongoDB connection string
-mongoose.connect(process.env.CONNECTION_URI || uri, { useNewUrlParser: true, useUnifiedTopology: true })
+const uri = 'mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replaced with my MongoDB connection string
+mongoose.connect(process.env.movies_uri || uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Connected to the database');
     // Start your server or perform other operations
