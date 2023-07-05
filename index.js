@@ -11,7 +11,6 @@ const passportJWT = require('passport-jwt');
 const { check, validationResult } = require('express-validator');
 const uuid = require('uuid');
 const cors = require('cors');
-const request = require('request');
 
 // Import Mongoose and models
 const mongoose = require('mongoose');
@@ -80,7 +79,7 @@ passport.use(new LocalStrategy({
 
 
 
-let allowedOrigins = ['https://movienostalgie.herokuapp.com'];
+let allowedOrigins = ['https://movienostalgie.herokuapp.com, http://localhost.8080'];
 app.use(cors());
 
 app.use(cors({
