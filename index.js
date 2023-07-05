@@ -8,6 +8,7 @@ const path = require('path');
 const passport = require('passport');
 const bodyParser = require('body-parser');
 const passportJWT = require('passport-jwt');
+const LocalStrategy = require('passport-local').Strategy;
 const { check, validationResult } = require('express-validator');
 const uuid = require('uuid');
 const cors = require('cors');
@@ -79,7 +80,8 @@ passport.use(new LocalStrategy({
 
 
 
-let allowedOrigins = ['https://movienostalgie.herokuapp.com, http://localhost.8080'];
+let allowedOrigins = ['https://movienostalgie.herokuapp.com', 'http://localhost:8080'];
+
 app.use(cors());
 
 app.use(cors({
