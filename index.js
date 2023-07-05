@@ -6,9 +6,7 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const passport = require('passport');
-const bodyParser = require('body-parser');
 const passportJWT = require('passport-jwt');
-const LocalStrategy = require('passport-local').Strategy;
 const { check, validationResult } = require('express-validator');
 const uuid = require('uuid');
 const cors = require('cors');
@@ -47,8 +45,7 @@ app.use(morgan('combined', {
   stream: accessLogStream,
 }));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(passport.initialize());
 
 // Configure passport for JWT authentication
@@ -278,8 +275,8 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }),(re
       $set: {
         username: req.body.username,
         password: req.body.password,
-        email: req.body.Email,
-        birthday: req.body.Birthday
+        email: req.body.email,
+        birthday: req.body.birthdate
      
         
       }
@@ -358,10 +355,11 @@ app.get('/documentation', (_req, res) => {
   });
     
    //Error handling middleware
-  app.use((err, _req, res, _next) => {
-  console.error(err.stack);
-  res.status(500).send('There was an error. Please try again later.');
+   app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('There was an error. Please try again later.');
   });
+  
 
 
 //if everything functions correctly this message is logged from port 8080 thats listening.
