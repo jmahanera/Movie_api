@@ -185,7 +185,7 @@ app.post('/login', (req, res, next) => {
 
 
 //creating a new user
-/*app.post('/users', [
+app.post('/users', [
   check('username', 'Username is required').isLength({ min: 5 }),
   check('username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
   check('password', 'Password is required').not().isEmpty(),
@@ -219,29 +219,9 @@ app.post('/login', (req, res, next) => {
       console.error(error);
       res.status(500).send('Error: ' + error);
     });
-});*/
-
-const options = {
-  url: 'https://movienostalgie.herokuapp.com/users',
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    username: 'newuser',
-    password: 'newpassword',
-    email: 'newuser@example.com',
-    birthdate: '2000-01-01'
-  })
-};
-
-request(options, (error, response, body) => {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log(body);
-  }
 });
+
+
 
  //allows users to save movies to their favorites!
  app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { session: false }),(req, res) => {
