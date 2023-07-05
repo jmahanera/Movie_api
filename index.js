@@ -79,7 +79,7 @@ passport.use(new LocalStrategy({
 
 
 
-let allowedOrigins = ['http://localhost:8080', 'https://movienostalgie.herokuapp.com'];
+let allowedOrigins = ['https://movienostalgie.herokuapp.com'];
 app.use(cors());
 
 app.use(cors({
@@ -128,7 +128,7 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), (_req, res)
     });
 });
 //searches for movies by their title and returns a  single JSON object
-app.get('/movies/:title', passport.authenticate('jwt', { session: false }),(req, res) => {
+app.get('/movies/:title', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.findOne({ Title: req.params.title })
     .then((movies) => {
       res.status(200).json(movies);
@@ -322,7 +322,7 @@ app.delete('/users/:userId', (req, res) => {
       if (!user) {
         res.status(400).send(req.params.userId + ' was not found');
       } else {
-        res.status(200).send(req.params.userId + ' was deleted');
+        res.status(200).send(req.params.userId + ' Successfully Deleted!!!');
       }
     })
     .catch((err) => {
