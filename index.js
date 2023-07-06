@@ -10,7 +10,6 @@ const passport = require('passport');
 const passportJWT = require('passport-jwt');
 const { check, validationResult } = require('express-validator');
 const uuid = require('uuid');
-const cors = require('cors');
 
 // Import Mongoose and models
 const mongoose = require('mongoose');
@@ -18,12 +17,6 @@ const Models = require('./models.js');
 
 const Movies = Models.Movie;
 const Users = Models.User;
-
-
-// Logger Initiated
-const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
-app.use(morgan('common'));
-
 
 // Connect to MongoDB
 const uri = 'mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replaced with my MongoDB connection string
@@ -35,6 +28,35 @@ mongoose.connect(process.env.movies_uri || uri, { useNewUrlParser: true, useUnif
   .catch((error) => {
     console.error('Error connecting to the database:', error);
   });
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+const cors = require('cors');
+let allowedOrigins = ['https://movienostalgie.herokuapp.com', 'http://localhost:8080'];
+app.use(cors());
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
+      return callback(new Error(message), false);
+    }
+    return callback(null, true);
+  }
+}));
+
+require('./auth')(app);
+const passport = require('passport');
+require('./passport');
+const jwtSecret = 'jwtSecret';
+
+// Logger Initiated
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
+app.use(morgan('combined', { stream: accessLogStream }));
+
+
 
   /*mongoose.connect(process.env.movies_uri, {
     useNewUrlParser: true,
@@ -49,8 +71,7 @@ app.use(morgan('combined', {
 
 
 app.use(passport.initialize());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+
 
 // Configure passport for JWT authentication
 LocalStrategy = require('passport-local').Strategy;
@@ -79,35 +100,13 @@ passport.use(new LocalStrategy({
   });
 }));
 
-
-
-let allowedOrigins = ['https://movienostalgie.herokuapp.com', 'http://localhost:8080'];
-
-app.use(cors());
-
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
-      return callback(new Error(message), false);
-    }
-    return callback(null, true);
-  }
-}));
-
-require('./auth')(app);
-const passport = require('passport');
-require('./passport');
-const jwtSecret = 'jwtSecret';
-
-// GET requests
-
 // This sets up a message once the user goes to the home page of the website.
 app.get('/', (_request, response) => {
   response.send('Welcome to mymoviesDB Operating under the brand name MOVIENOSTALGIE!');
 });
 
+
+// GET requests
 // Get all users
 app.get('/users', passport.authenticate('jwt', { session: false }), (_req, res) => {
   Users.find()
