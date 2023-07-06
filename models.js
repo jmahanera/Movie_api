@@ -20,19 +20,16 @@ const movieSchema = mongoose.Schema({
 
 const Movie = mongoose.model('Movie', movieSchema); // Initialize Movie variable here
 
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema({
     username: { type: String, required: true },
     password: { type: String, required: true },
     email: { type: String, required: true },
     birthdate: Date,
 });
 
-userSchema.statics.hashPassword = (password) => {
-    return bcrypt.hashSync(password, 10);
-};
-
-userSchema.methods.validatePassword = function (password) {
-    return bcrypt.compareSync(password, this.password);
-};
+userSchema.statics.hashPassword = function (password) {
+    const salt = bcrypt.genSaltSync(10);
+    return bcrypt.hashSync(password, salt);
+  };
 
 const User = mongoose.model('User', userSchema);

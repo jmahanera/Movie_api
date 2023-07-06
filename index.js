@@ -1,5 +1,6 @@
 // Import required modules
 const express = require('express');
+const bcrypt = require('bcrypt');
 const app = express();
 const morgan = require('morgan');
 const fs = require('fs');
