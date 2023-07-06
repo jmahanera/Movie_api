@@ -19,13 +19,10 @@ const Models = require('./models.js');
 const Movies = Models.Movie;
 const Users = Models.User;
 
-// Define the hashPassword function in the User model
-Users.hashedPassword = function (password) {
-  // Implement password hashing logic here
-  // For example:
-  const salt = bcrypt.genSaltSync(10);
-  return bcrypt.hashSync(password, salt);
-};
+/*mongoose.connect(process.env.movies_uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});*/
 
 // Connect to MongoDB
 const uri = 'mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replaced with my MongoDB connection string
@@ -38,8 +35,20 @@ mongoose.connect(process.env.movies_uri || uri, { useNewUrlParser: true, useUnif
     console.error('Error connecting to the database:', error);
   });
 
-app.use(bodyParser.json());
+  app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+/*// Define the hashPassword function
+const hashedPassword = function (password) {
+  // Implement password hashing logic here
+  const salt = bcrypt.genSaltSync(10);
+  return bcrypt.hashSync(password, salt);
+};
+
+// Define the hashPassword function in the User model
+Users.hashedPassword = hashedPassword;*/
+
+
 
 const cors = require('cors');
 let allowedOrigins = ['https://movienostalgie.herokuapp.com', 'http://localhost:8080'];
@@ -64,10 +73,6 @@ const jwtSecret = 'jwtSecret';
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
 app.use(morgan('combined', { stream: accessLogStream }));
 
-/*mongoose.connect(process.env.movies_uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});*/
 
 // Middleware
 app.use(express.static('public'));
@@ -186,7 +191,6 @@ app.post('/login', (req, res, next) => {
 
 // Create a new user
 app.post('/users', [
-  // ...
 ], (req, res) => {
   let errors = validationResult(req);
   if (!errors.isEmpty()) {
