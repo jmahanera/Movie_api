@@ -38,16 +38,25 @@ mongoose.connect(process.env.movies_uri || uri, { useNewUrlParser: true, useUnif
   app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-/*// Define the hashPassword function
-const hashedPassword = function (password) {
-  // Implement password hashing logic here
-  const salt = bcrypt.genSaltSync(10);
-  return bcrypt.hashSync(password, salt);
+
+// Function to hash a password
+const hashPassword = async (password) => {
+  try {
+    // Generate a salt
+    const salt = await bcrypt.genSalt(10);
+    
+    // Hash the password with the salt
+    const hashedPassword = await bcrypt.hash(password, salt);
+    
+    // Return the hashed password
+    return hashedPassword;
+  } catch (error) {
+    throw new Error('Password hashing failed');
+  }
 };
 
-// Define the hashPassword function in the User model
-Users.hashedPassword = hashedPassword;*/
-
+// Example usage
+const plainPassword = 'password123';
 
 
 const cors = require('cors');
@@ -196,7 +205,6 @@ app.post('/users', [
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
-  let hashedPassword = hashedPassword(req.body.password);
 
   Users.findOne({ username: req.body.username })
     .then((user) => {
@@ -205,7 +213,7 @@ app.post('/users', [
       } else {
         Users.create({
           username: req.body.username,
-          password: hashedPassword,
+          password: req.body.password,
           email: req.body.email,
           birthdate: req.body.birthdate
         })
