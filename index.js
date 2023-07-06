@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const fs = require('fs');
+const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const passport = require('passport');
@@ -14,6 +15,7 @@ const cors = require('cors');
 // Import Mongoose and models
 const mongoose = require('mongoose');
 const Models = require('./models.js');
+
 const Movies = Models.Movie;
 const Users = Models.User;
 
@@ -47,6 +49,8 @@ app.use(morgan('combined', {
 
 
 app.use(passport.initialize());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Configure passport for JWT authentication
 LocalStrategy = require('passport-local').Strategy;
@@ -93,6 +97,8 @@ app.use(cors({
 }));
 
 require('./auth')(app);
+const passport = require('passport');
+require('./passport');
 const jwtSecret = 'jwtSecret';
 
 // GET requests
