@@ -20,7 +20,7 @@ const Movies = Models.Movie;
 const Users = Models.User;
 
 // Define the hashPassword function in the User model
-Users.hashPassword = function (password) {
+Users.hashedPassword = function (password) {
   // Implement password hashing logic here
   // For example:
   const salt = bcrypt.genSaltSync(10);
@@ -192,7 +192,8 @@ app.post('/users', [
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
-  let hashedPassword = Users.hashPassword(req.body.password);
+  let hashedPassword = hashedPassword(req.body.password);
+
   Users.findOne({ username: req.body.username })
     .then((user) => {
       if (user) {
@@ -216,6 +217,7 @@ app.post('/users', [
       res.status(500).send('Error: ' + error);
     });
 });
+
 
 
 // Allows users to save movies to their favorites!
