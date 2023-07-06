@@ -187,23 +187,28 @@ app.post('/login', (req, res, next) => {
 
 // Create a new user
 app.post('/users', [
+  // Express validator checks
   check('username', 'Username is required').notEmpty(),
   check('password', 'Password is required').notEmpty(),
   check('email', 'Email is required').notEmpty().isEmail(),
   check('birthdate', 'Birthdate is required').notEmpty()
 ], (req, res) => {
+  // Validate the request body
   let errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
 
+  // Check if the username already exists
   Users.findOne({ username: req.body.username })
     .then((user) => {
       if (user) {
-        return res.status(400).send(req.body.username +' already exists');
+        return res.status(400).send('Username already exists');
       } else {
+        // Hash the password
         hashPassword(req.body.password)
           .then((hashedPassword) => {
+            // Create a new user
             Users.create({
               username: req.body.username,
               password: hashedPassword,
@@ -229,6 +234,7 @@ app.post('/users', [
       res.status(500).send('Error: ' + error);
     });
 });
+
 
 // Allows users to save movies to their favorites!
 app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
