@@ -1,6 +1,7 @@
 // Importing required modules
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
+const jwtSecret = "jwt-secret";
 const Models = require("./models.js");
 const passportJWT = require("passport-jwt");
 
