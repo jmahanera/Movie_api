@@ -15,6 +15,8 @@ let generateJWTToken = (user) => {
   });
 }
 
+module.exports = generateJWTToken;
+
 
 /* POST login. */
 module.exports = (router) => {
@@ -37,3 +39,4 @@ module.exports = (router) => {
     })(req, res);
   });
 }
+
