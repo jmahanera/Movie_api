@@ -10,36 +10,12 @@ let Users = Models.User;
 let JWTStrategy = passportJWT.Strategy;
 let ExtractJWT = passportJWT.ExtractJwt;
 
-passport.use(
-  new JWTStrategy(
-    {
-      jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-      secretOrKey: jwtSecret,
-    },
-    (jwtPayload, callback) => {
-      Users.findById(jwtPayload._id)
-        .then((user) => {
-          if (user) {
-            return callback(null, user);
-          } else {
-            return callback(null, false, {
-              message: 'User not found.',
-            });
-          }
-        })
-        .catch((error) => {
-          return callback(error);
-        });
-    }
-  )
-);
-
-
 // Configuring Passport with LocalStrategy for username/password authentication
-  /*new LocalStrategy(
+passport.use(
+  new LocalStrategy(
     {
-      username: "username",
-      password: "password",
+      usernameField: "username", // Specify the field name for the username
+      passwordField: "password", // Specify the field name for the password
     },
     (username, password, callback) => {
       console.log(username + "  " + password);
@@ -67,18 +43,17 @@ passport.use(
         });
     }
   )
-);*/
-
+);
 
 // Configuring Passport with JWTStrategy for JSON Web Token authentication
-/*passport.use(
+passport.use(
   new JWTStrategy(
     {
-      jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-      secretOrKey: "jwtSecret",
+      jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(), // Extract JWT from Authorization header
+      secretOrKey: jwtSecret, // Use the jwtSecret variable as the secret key
     },
     (jwtPayload, callback) => {
-      /* Finding a user with the provided JWT Payload's _id in the database
+      // Finding a user with the provided JWT Payload's _id in the database
       return Users.findById(jwtPayload._id)
         .then((user) => {
           // User found, return the user object
@@ -89,4 +64,4 @@ passport.use(
         });
     }
   )
-);*/
+);
