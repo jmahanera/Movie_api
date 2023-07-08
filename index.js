@@ -74,7 +74,7 @@ app.use(morgan('combined', { stream: accessLogStream }));
 app.use(passport.initialize());
 
 // Configure passport for JWT authentication
-LocalStrategy = require('passport-local').Strategy;
+/*LocalStrategy = require('passport-local').Strategy;
 JWTStrategy = passportJWT.Strategy;
 ExtractJWT = passportJWT.ExtractJwt;
 
@@ -103,7 +103,7 @@ passport.use(new LocalStrategy({
       }
     });
   });
-}));
+}));*/
 
 // This sets up a message once the user goes to the home page of the website.
 app.get('/', (_request, response) => {
