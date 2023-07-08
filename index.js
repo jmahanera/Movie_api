@@ -20,16 +20,16 @@ const Movies = Models.Movie;
 const Users = Models.User;
 
 // Connect to MongoDB
-/*const uri = 'mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replaced with my MongoDB connection string
+const uri = 'mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replaced with my MongoDB connection string
 mongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Connected to the database');
   })
   .catch((error) => {
     console.error('Error connecting to the database:', error);
-  });*/
+  });
 
-  mongoose.connect( process.env.movies_uri, { useNewUrlParser: true, useUnifiedTopology: true });
+  /*mongoose.connect( process.env.movies_uri, { useNewUrlParser: true, useUnifiedTopology: true });*/
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
