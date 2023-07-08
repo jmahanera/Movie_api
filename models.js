@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
     username: { type: String, required: true },
     password: { type: String, required: true },
     email: { type: String, required: true },
-    birthdate: Date,
+    birthaDte: Date,
 });
 
 userSchema.statics.hashPassword = function (password) {
