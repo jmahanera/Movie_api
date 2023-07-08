@@ -299,14 +299,21 @@ app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { sess
 
 
 //updating a user's information
+const { check, validationResult } = require('express-validator');
+
 app.put('/users/:username', passport.authenticate('jwt', { session: false }),
   [
     check('username', 'Username is required').isLength({ min: 5 }),
-    check('username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
-    check('password', 'Password is required').not().isEmpty(),
+    check('username', 'Username contains non-alphanumeric characters - not allowed.').isAlphanumeric(),
+    check('password', 'Password is required').notEmpty(),
     check('email', 'Email does not appear to be valid').isEmail()
-  ], (req, res) => {
+  ],
+  (req, res) => {
     let errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     let hashedPassword = Users.hashPassword(req.body.password);
     Users.findOneAndUpdate(
       { username: req.params.username },
@@ -331,7 +338,9 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }),
         console.error(err);
         res.status(500).send('Error: ' + err);
       });
-  });
+  }
+);
+
 
 
 //removing an existing user
