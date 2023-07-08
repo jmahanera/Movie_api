@@ -9,6 +9,8 @@ const jwt = require('jsonwebtoken');
 const path = require('path');
 const passport = require('passport');
 const passportJWT = require('passport-jwt');
+const { check, validationResult } = require('express-validator');
+const { body } = require('express-validator');
 const uuid = require('uuid');
 
 // Import Mongoose and models
@@ -298,7 +300,7 @@ app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { sess
 
 
 //updating a user's information
-const { check, validationResult } = require('express-validator');
+/*const { check, validationResult } = require('express-validator');*/
 
 app.put('/users/:username', passport.authenticate('jwt', { session: false }),
   [
