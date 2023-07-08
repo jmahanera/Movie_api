@@ -62,7 +62,7 @@ app.use(cors({
 
 require('./auth')(app);
 require('./passport');
-const jwtSecret = process.env.JWT_SECRET || 'your_jwt_secret';
+const jwtSecret = process.env.JWT_SECRET || 'my_secret_access_key';
 
 // Logger Initiated
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
