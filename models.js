@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
     username: { type: String, required: true },
     password: { type: String, required: true },
     email: { type: String, required: true },
-    birthaDte: Date,
+    birthDate: Date,
 });
 
 userSchema.statics.hashPassword = function (password) {
@@ -33,3 +33,6 @@ userSchema.statics.hashPassword = function (password) {
   };
 
 const User = mongoose.model('User', userSchema);
+
+module.exports.Movie = Movie;
+module.exports.User = User;
