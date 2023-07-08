@@ -9,7 +9,6 @@ const jwt = require('jsonwebtoken');
 const path = require('path');
 const passport = require('passport');
 const passportJWT = require('passport-jwt');
-const { body, validationResult } = require('express-validator');
 const uuid = require('uuid');
 
 // Import Mongoose and models
