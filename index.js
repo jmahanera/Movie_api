@@ -81,26 +81,29 @@ app.use(morgan('combined', { stream: accessLogStream }));
 app.use(passport.initialize());
 
 // Configure passport for JWT authentication
-/*const LocalStrategy = require('passport-local').Strategy;*/
+const LocalStrategy = require('passport-local').Strategy;
 JWTStrategy = passportJWT.Strategy;
 ExtractJWT = passportJWT.ExtractJwt;
 
+// Passport configuration
 passport.use(
-  new JWTStrategy(
-    {
-      jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-      secretOrKey: jwtSecret,
-    },
-    (jwtPayload, callback) => {
-      return Users.findById(jwtPayload._id)
-        .then((user) => {
-          return callback(null, user);
-        })
-        .catch((error) => {
-          return callback(error);
+  new LocalStrategy((username, password, done) => {
+    Users.findOne({ username: username })
+      .then((user) => {
+        if (!user) {
+          return done(null, false, { message: 'Incorrect username or password' });
+        }
+        
+        user.validatePassword(password, (err, result) => {
+          if (result) {
+            return done(null, user);
+          } else {
+            return done(null, false, { message: 'Incorrect username or password' });
+          }
         });
-    }
-  )
+      })
+      .catch((err) => done(err));
+  })
 );
 
 // This sets up a message once the user goes to the home page of the website.
@@ -217,7 +220,6 @@ app.get('/movies/directors/:directorsName', passport.authenticate('jwt', { sessi
     });
 });
 
-// Endpoint for user login
 app.post('/login', (req, res, next) => {
   passport.authenticate('local', { session: false }, (error, user, info) => {
     if (error || !user) {
