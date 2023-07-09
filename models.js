@@ -27,20 +27,22 @@ const userSchema = new mongoose.Schema({
   birthDate: Date,
 });
 
-UserSchema.methods.validatePassword = function (password, callback) {
-    bcrypt.compare(password, this.password, function (err, result) {
-      if (err) {
-        return callback(err);
-      }
-      callback(null, result);
-    });
-  };
-  
-  const User = mongoose.model('User', UserSchema);
-  
-  module.exports = {
-    User: User
-  };
+userSchema.methods.validatePassword = function (password, callback) {
+  bcrypt.compare(password, this.password, function (err, result) {
+    if (err) {
+      return callback(err);
+    }
+    callback(null, result);
+  });
+};
+
+const User = mongoose.model('User', userSchema);
+
+module.exports = {
+  Movie: Movie,
+  User: User
+};
+
 
 
 module.exports.Movie = Movie;
