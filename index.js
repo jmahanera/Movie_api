@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const app = express();
 const morgan = require('morgan');
 const fs = require('fs');
+const LocalStrategy = require("passport-local").Strategy;
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const path = require('path');
@@ -20,6 +21,9 @@ const Models = require('./models.js');
 const Movies = Models.Movie;
 const Users = Models.User;
 
+//Middleware
+// 
+
 // Connect to MongoDB
 const uri = 'mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replaced with my MongoDB connection string
 mongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -34,6 +38,7 @@ mongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnif
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(morgan('common'));
 
 // Function to hash a password
 const hashPassword = async (password) => {
@@ -45,6 +50,7 @@ const hashPassword = async (password) => {
     throw new Error('Password hashing failed');
   }
 };
+
 
 const cors = require('cors');
 let allowedOrigins = ['https://movienostalgie.herokuapp.com', 'http://localhost:8080'];
@@ -62,7 +68,8 @@ app.use(cors({
 
 require('./auth')(app);
 require('./passport');
-const jwtSecret = process.env.JWT_SECRET || 'my_secret_access_key';
+const jwtSecret = "jwt-secret";
+
 
 // Logger Initiated
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' });
@@ -74,7 +81,7 @@ app.use(morgan('combined', { stream: accessLogStream }));
 app.use(passport.initialize());
 
 // Configure passport for JWT authentication
-/*LocalStrategy = require('passport-local').Strategy;
+LocalStrategy = require('passport-local').Strategy;
 JWTStrategy = passportJWT.Strategy;
 ExtractJWT = passportJWT.ExtractJwt;
 
@@ -103,7 +110,7 @@ passport.use(new LocalStrategy({
       }
     });
   });
-}));*/
+}));
 
 // This sets up a message once the user goes to the home page of the website.
 app.get('/', (_request, response) => {
