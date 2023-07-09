@@ -237,38 +237,48 @@ app.post('/login', (req, res, next) => {
 //creating a new user
 app.post('/users', [
   body('username', 'Username is required').isLength({ min: 5 }),
-  body('username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+  body('username', 'Username contains non-alphanumeric characters - not allowed.').isAlphanumeric(),
   body('password', 'Password is required').not().isEmpty(),
+  body('password', 'Password must be at least 5 characters long').isLength({ min: 5 }),
   body('email', 'Email does not appear to be valid').isEmail()
 ], async (req, res) => {
+  // Validation code
   let errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
-  let hashedPassword = await hashPassword(req.body.password); // Use the hashPassword function
-  Users.findOne({ username: req.body.username })
-    .then((user) => {
-      if (user) {
-        return res.status(400).send(req.body.username + ' already exists');
-      } else {
-        Users
-          .create({
+
+  // Password validation passed, continue with user creation
+  try {
+    const hashedPassword = await hashPassword(req.body.password);
+    Users.findOne({ username: req.body.username })
+      .then((user) => {
+        if (user) {
+          return res.status(400).send(req.body.username + ' already exists');
+        } else {
+          Users.create({
             username: req.body.username,
             password: hashedPassword,
             email: req.body.email,
             birthDate: req.body.birthdate
           })
-          .then((user) => { res.status(201).json(user) })
-          .catch((error) => {
-            console.error(error);
-            res.status(500).send('Error: ' + error);
-          })
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-      res.status(500).send('Error: ' + error);
-    });
+            .then((user) => {
+              res.status(201).json(user);
+            })
+            .catch((error) => {
+              console.error(error);
+              res.status(500).send('Error: ' + error);
+            });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).send('Error: ' + error);
+      });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error: Password hashing failed');
+  }
 });
 
 
