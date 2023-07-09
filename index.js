@@ -81,36 +81,27 @@ app.use(morgan('combined', { stream: accessLogStream }));
 app.use(passport.initialize());
 
 // Configure passport for JWT authentication
-LocalStrategy = require('passport-local').Strategy;
+/*const LocalStrategy = require('passport-local').Strategy;*/
 JWTStrategy = passportJWT.Strategy;
 ExtractJWT = passportJWT.ExtractJwt;
 
-passport.use(new LocalStrategy({
-  usernameField: 'username',
-  passwordField: 'password'
-}, (username, password, callback) => {
-  Users.findOne({ username: username }, (error, user) => {
-    if (error) {
-      console.log(error);
-      return callback(error);
+passport.use(
+  new JWTStrategy(
+    {
+      jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+      secretOrKey: jwtSecret,
+    },
+    (jwtPayload, callback) => {
+      return Users.findById(jwtPayload._id)
+        .then((user) => {
+          return callback(null, user);
+        })
+        .catch((error) => {
+          return callback(error);
+        });
     }
-
-    if (!user) {
-      console.log('incorrect username');
-      return callback(null, false, { message: 'Incorrect username or password.' });
-    }
-
-    bcrypt.compare(password, user.password, (error, result) => {
-      if (result) {
-        console.log('finished');
-        return callback(null, user);
-      } else {
-        console.log('incorrect password');
-        return callback(null, false, { message: 'Incorrect username or password.' });
-      }
-    });
-  });
-}));
+  )
+);
 
 // This sets up a message once the user goes to the home page of the website.
 app.get('/', (_request, response) => {
