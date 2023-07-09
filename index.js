@@ -81,7 +81,6 @@ app.use(morgan('combined', { stream: accessLogStream }));
 app.use(passport.initialize());
 
 // Configure passport for JWT authentication
-const LocalStrategy = require('passport-local').Strategy;
 JWTStrategy = passportJWT.Strategy;
 ExtractJWT = passportJWT.ExtractJwt;
 
