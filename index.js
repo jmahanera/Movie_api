@@ -34,11 +34,14 @@ mongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnif
     console.error('Error connecting to the database:', error);
   });
 
+  
   /*mongoose.connect( process.env.movies_uri, { useNewUrlParser: true, useUnifiedTopology: true });*/
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('common'));
+
+
 
 // Function to hash a password
 const hashPassword = async (password) => {
@@ -110,7 +113,7 @@ app.get('/', (_request, response) => {
   response.send('Welcome to mymoviesDB Operating under the brand name MOVIENOSTALGIE!');
 });
 
-// GET requests
+
 // Get all users
 app.get('/users', passport.authenticate('jwt', { session: false }), (_req, res) => {
   Users.find()
