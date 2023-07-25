@@ -17,6 +17,7 @@ Node.js
 Express.js
 MongoDB
 Mongoose
+React
 Passport.js
 bcrypt
 JSON Web Tokens (JWT)
