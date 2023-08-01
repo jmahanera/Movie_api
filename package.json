@@ -40,7 +40,7 @@
     "reader": "^0.0.8",
     "request": "^2.88.2",
     "uuid": "^9.0.0",
-    "winston": "^3.9.0"
+    "winston": "^3.10.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
