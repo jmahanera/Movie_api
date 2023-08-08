@@ -1,7 +1,7 @@
 // Importing required modules
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-const jwtSecret = "jwt-secret";
+const jwtSecret = "jwtSecret";
 const Models = require("./models.js");
 const passportJWT = require("passport-jwt");
 
@@ -53,7 +53,7 @@ passport.use(
       secretOrKey: jwtSecret, // Use the jwtSecret variable as the secret key
     },
     (jwtPayload, callback) => {
-      // Finding a user with the provided JWT Payload's _id in the database
+      // Finding a user with the provided JWT Payloads _id in the database
       return Users.findById(jwtPayload._id)
         .then((user) => {
           // User found, return the user object
