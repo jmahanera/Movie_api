@@ -82,7 +82,7 @@ app.use(morgan('combined', { stream: accessLogStream }));
 // Middleware
 app.use(express.static('public'));
 app.use(morgan('combined', { stream: accessLogStream }));
-app.use(passport.initialize());
+app.use(passport.initialize());    
 
 // Configure passport for JWT authentication
 JWTStrategy = passportJWT.Strategy;
