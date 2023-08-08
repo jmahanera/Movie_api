@@ -25,8 +25,9 @@ const Users = Models.User;
 // 
 
 // Connect to MongoDB
-const uri = 'mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replaced with my MongoDB connection string
-mongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnifiedTopology: true })
+const uri = 'mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replaced with my MongoDB connecmongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnifiedTopology: true })
+//mongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect( "mongodb://127.0.0.1:27017/mymoviesDB",{ useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Connected to the database');
   })
@@ -71,7 +72,7 @@ app.use(cors({
 
 require('./auth')(app);
 require('./passport');
-const jwtSecret = "jwt-secret";
+const jwtSecret = "jwtSecret";
 
 
 // Logger Initiated
@@ -222,7 +223,7 @@ app.get('/movies/directors/:directorsName', passport.authenticate('jwt', { sessi
     });
 });
 
-app.post('/login', (req, res, next) => {
+/*app.post('/login', (req, res, next) => {
   passport.authenticate('local', { session: false }, (error, user, info) => {
     if (error || !user) {
       return res.status(400).json({
@@ -236,7 +237,7 @@ app.post('/login', (req, res, next) => {
 
     return res.json({ user, token });
   })(req, res, next);
-});
+});*/
 
 //creating a new user
 app.post('/users', [
