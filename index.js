@@ -26,8 +26,8 @@ const Users = Models.User;
 
 // Connect to MongoDB
 const uri = 'mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replaced with my MongoDB connecmongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnifiedTopology: true })
-//mongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnifiedTopology: true })
-mongoose.connect( "mongodb://127.0.0.1:27017/mymoviesDB",{ useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnifiedTopology: true })
+//mongoose.connect( "mongodb://127.0.0.1:27017/mymoviesDB",{ useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Connected to the database');
   })
@@ -72,7 +72,7 @@ app.use(cors({
 
 require('./auth')(app);
 require('./passport');
-const jwtSecret = "jwtSecret";
+//const jwtSecret = "jwtSecret";
 
 
 // Logger Initiated
@@ -157,8 +157,10 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), (_req, res)
 
 // Searches for movies by their title and returns a single JSON object
 app.get('/movies/:title', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Movies.findOne({ Title: req.params.title })
-    .then((movie) => {
+  console.log ("mymovietitle", req.params.title)
+  Movies.find({ Title: req.params.title })
+    .then((movie) => { 
+      console.log("Mymovie", movie);
       res.status(200).json(movie);
     })
     .catch((err) => {
@@ -289,9 +291,6 @@ app.post('/users', [
 
 
 
-         
-
-
 
 // Allows users to save movies to their favorites!
 app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
@@ -324,13 +323,13 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }),
     check('password', 'Password is required').notEmpty(),
     check('email', 'Email does not appear to be valid').isEmail()
   ],
-  (req, res) => {
+  async (req, res) => {
     let errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    let hashedPassword = Users.hashPassword(req.body.password);
+    let hashedPassword = await hashPassword(req.body.password);
     Users.findOneAndUpdate(
       { username: req.params.username },
       {
