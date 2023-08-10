@@ -25,6 +25,8 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   email: { type: String, required: true },
   birthDate: Date,
+  FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Movie" }],
+
 });
 
 userSchema.methods.validatePassword = function (password, callback) {
