@@ -18,7 +18,7 @@ const movieSchema = mongoose.Schema({
   Featured: Boolean
 });
 
-const Movie = mongoose.model('Movie', movieSchema);
+const Movie = mongoose.model('Movies', movieSchema);
 
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true },
