@@ -157,7 +157,7 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), (_req, res)
 
 // Searches for movies by their title and returns a single JSON object
 app.get('/movies/:title', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Movies.find({ "Title": req.params.title })
+  Movies.find()
     .then((movie) => { 
       res.status(200).json(movie);
     })
