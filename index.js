@@ -157,10 +157,8 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), (_req, res)
 
 // Searches for movies by their title and returns a single JSON object
 app.get('/movies/:title', passport.authenticate('jwt', { session: false }), (req, res) => {
-  console.log ("mymovietitle", req.params.title)
   Movies.find({ Title: req.params.title })
     .then((movie) => { 
-      console.log("Mymovie", movie);
       res.status(200).json(movie);
     })
     .catch((err) => {
@@ -213,17 +211,7 @@ app.get('/movies/directors/:director', passport.authenticate('jwt', { session: f
     });
 });
 
-// Searches for movies by the director's name and returns the movies with that director's name
-app.get('/movies/directors/:directorsName', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Movies.find({ 'Director.Name': req.params.directorsName })
-    .then((movies) => {
-      res.status(200).json(movies);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
+
 
 /*app.post('/login', (req, res, next) => {
   passport.authenticate('local', { session: false }, (error, user, info) => {
