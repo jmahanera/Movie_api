@@ -167,17 +167,6 @@ app.get('/movies/:title', passport.authenticate('jwt', { session: false }), (req
     });
 });
 
-// Searches for movies by their genre and returns a JSON object
-/*app.get('/movies/genres/:genreName', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Movies.find({ 'Genre.Name': req.params.genreName })
-    .then((movies) => {
-      res.status(200).json(movies);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});*/
 
 // diplaying movies by genre 
 app.get('/movies/genre/:genre', passport.authenticate('jwt', { session: false }), (req, res) => {
@@ -261,8 +250,6 @@ app.post('/users', [
 
 
 
-
-
 // Allows users to save movies to their favorites!
 app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndUpdate(
@@ -328,7 +315,6 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }),
 );
 
 
-
 //removing an existing user
 app.delete('/users/:username', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndRemove({ username: req.params.username })
@@ -344,7 +330,6 @@ app.delete('/users/:username', passport.authenticate('jwt', { session: false }),
       res.status(500).send('Error: ' + err);
     });
 });
-
 
 
 //error-handling middleware function
