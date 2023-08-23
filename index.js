@@ -212,23 +212,6 @@ app.get('/movies/directors/:director', passport.authenticate('jwt', { session: f
 });
 
 
-
-/*app.post('/login', (req, res, next) => {
-  passport.authenticate('local', { session: false }, (error, user, info) => {
-    if (error || !user) {
-      return res.status(400).json({
-        message: 'Authentication failed',
-        user: user
-      });
-    }
-
-    // Generate JWT token
-    const token = jwt.sign(user.toJSON(), jwtSecret);
-
-    return res.json({ user, token });
-  })(req, res, next);
-});*/
-
 //creating a new user
 app.post('/users', [
   body('username', 'Username is required').isLength({ min: 5 }),
