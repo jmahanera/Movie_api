@@ -168,7 +168,7 @@ app.get('/movies/:title', passport.authenticate('jwt', { session: false }), (req
 });
 
 // Searches for movies by their genre and returns a JSON object
-app.get('/movies/genres/:genreName', passport.authenticate('jwt', { session: false }), (req, res) => {
+/*app.get('/movies/genres/:genreName', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.find({ 'Genre.Name': req.params.genreName })
     .then((movies) => {
       res.status(200).json(movies);
@@ -177,7 +177,7 @@ app.get('/movies/genres/:genreName', passport.authenticate('jwt', { session: fal
       console.error(err);
       res.status(500).send('Error: ' + err);
     });
-});
+});*/
 
 // diplaying movies by genre 
 app.get('/movies/genre/:genre', passport.authenticate('jwt', { session: false }), (req, res) => {
