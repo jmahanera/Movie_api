@@ -29,7 +29,7 @@ const uri = 'mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymo
 mongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnifiedTopology: true })
 //mongoose.connect( "mongodb://127.0.0.1:27017/mymoviesDB",{ useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
-    console.log('Connected to the database');
+    console.log('Connected to database');
   })
   .catch((error) => {
     console.error('Error connecting to the database:', error);
