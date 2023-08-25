@@ -132,7 +132,7 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), (r
   Users.findOne({ username: req.params.username })
     .then((user) => {
       if (!user) {
-        return res.status(404).send('Error: ' + req.params.name + ' was not found');
+        return res.status(404).send('Error: ' + req.params.name + ' Username does not exist');
       } else {
         res.json(user);
       }
