@@ -173,7 +173,7 @@ app.get('/movies/genre/:genre', passport.authenticate('jwt', { session: false })
   Movies.find({ 'genre.name': req.params.genre })
     .then((movies) => {
       if (movies.length == 0) {
-        return res.status(404).send('Error: no movies found with the ' + req.params.genre + ' genre type.');
+        return res.status(404).send('Error: no movies found with this genre ' + req.params.genre + ' genre type.');
       } else {
         res.status(200).json(movies);
       }
@@ -189,7 +189,7 @@ app.get('/movies/directors/:director', passport.authenticate('jwt', { session: f
   Movies.find({ 'director.name': req.params.director })
     .then((movies) => {
       if (movies.length == 0) {
-        return res.status(404).send('Error: no movies found with the director ' + req.params.director + ' name');
+        return res.status(404).send('Error: no movies found with this directorName ' + req.params.director + ' name');
       } else {
         res.status(200).json(movies);
       }
@@ -221,7 +221,7 @@ app.post('/users', [
     Users.findOne({ username: req.body.username })
       .then((user) => {
         if (user) {
-          return res.status(400).send(req.body.username + ' already exists');
+          return res.status(400).send(req.body.username + ' UserName already exists in Database');
         } else {
           Users.create({
             username: req.body.username,
@@ -302,7 +302,7 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }),
     )
       .then((user) => {
         if (!user) {
-          return res.status(404).send('Error: No user was found');
+          return res.status(404).send('Error: Username does not exist in this database');
         } else {
           res.json(user);
         }
@@ -335,7 +335,7 @@ app.delete('/users/:username', passport.authenticate('jwt', { session: false }),
 //error-handling middleware function
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send('Something is not right, Please cross check and retest!');
+  res.status(500).send('Something is not right, Please verify and retest!');
 });
 
 // Start the server
