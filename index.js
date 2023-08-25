@@ -32,7 +32,7 @@ mongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnif
     console.log('Connected to database');
   })
   .catch((error) => {
-    console.error('Error connecting to the database:', error);
+    console.error('Error connecting to database:', error);
   });
 
   
