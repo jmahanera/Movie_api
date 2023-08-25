@@ -320,7 +320,7 @@ app.delete('/users/:username', passport.authenticate('jwt', { session: false }),
   Users.findOneAndRemove({ username: req.params.username })
     .then((user) => {
       if (!user) {
-        res.status(404).send('User ' + req.params.username + ' was not found');
+        res.status(404).send('User ' + req.params.username + ' The requested username does not exist in this database');
       } else {
         res.status(200).send(req.params.username + ' was deleted.');
       }
