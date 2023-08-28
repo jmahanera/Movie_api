@@ -315,15 +315,15 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }),
 );
 
 // Update movie image URL
-app.put('/movies/:movieName/imageurl', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  const { movieId } = req.params;
+app.put('/movies/:movieName/imageUrl', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const { movieName } = req.params;
   const { imageUrl } = req.body;
 
   try {
-    const updatedMovie = await Movies.findByIdAndUpdate(movieId, { $set: { imageUrl } }, { new: true });
+    const updatedMovie = await Movies.findByIdAndUpdate(movieName, { $set: { imageUrl } }, { new: true });
 
     if (!updatedMovie) {
-      return res.status(404).send('Error: Movie with ID ' + movieId + ' not found.');
+      return res.status(404).send('Error: Movie with Name ' + movieId + ' not found.');
     }
 
     res.status(200).json(updatedMovie);
