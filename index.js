@@ -314,6 +314,26 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }),
   }
 );
 
+// Update movie image URL
+app.put('/movies/:movieId/image', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const { movieId } = req.params;
+  const { imageUrl } = req.body;
+
+  try {
+    const updatedMovie = await Movies.findByIdAndUpdate(movieId, { $set: { imageUrl } }, { new: true });
+
+    if (!updatedMovie) {
+      return res.status(404).send('Error: Movie with ID ' + movieId + ' not found.');
+    }
+
+    res.status(200).json(updatedMovie);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error: ' + error);
+  }
+});
+
+
 
 //removing an existing user
 app.delete('/users/:username', passport.authenticate('jwt', { session: false }), (req, res) => {
