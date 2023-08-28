@@ -315,7 +315,7 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }),
 );
 
 // Update movie image URL
-app.put('/movies/:movieId/image', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.put('/movies/:movieName/imageurl', passport.authenticate('jwt', { session: false }), async (req, res) => {
   const { movieId } = req.params;
   const { imageUrl } = req.body;
 
