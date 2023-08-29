@@ -184,6 +184,23 @@ app.get('/movies/genre/:genre', passport.authenticate('jwt', { session: false })
     });
 });
 
+// Get movies by a specific genre
+app.get('/genres/:genre', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Movies.find({ 'genre.name': req.params.genre })
+    .then((movies) => {
+      if (movies.length === 0) {
+        return res.status(404).send('Error: No movies found with genre ' + req.params.genre);
+      } else {
+        res.status(200).json(movies);
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+
 // displaying movies by director
 app.get('/movies/directors/:director', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.find({ 'director.name': req.params.director })
