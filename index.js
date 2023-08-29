@@ -208,7 +208,6 @@ app.get('/directors/:directorName', passport.authenticate('jwt', { session: fals
       } else {
         const directorDetails = {
           director: req.params.directorName,
-          birthyear: movies[0].director.birthyear, // Assuming birth year is stored in the first movie's director field
           movies: movies.map(movie => movie.title)
         };
         res.status(200).json(directorDetails);
