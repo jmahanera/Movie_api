@@ -4,23 +4,24 @@ import { MovieView } from "movie-view/movie-view";
 
 export const MainView = () => {
   const [movies, setMovies] = useState([
-    { id: "644a3373a33d5b41dd203af9",
-      title: "The Shawshank Redemption",
-      description: "A man befriends a fellow inmate in prison and escapes",
-      director: "Frank Darabont",
-      imageurl: "http://example.com/the_shawshank_redemption"
+    { id: "644a38baa33d5b41dd203aff",
+      title: "Jurassic Park",
+      description: "A theme park with cloned dinosaurs goes wrong",
+      director: "Steven Spielberg",
+      imageurl: "https://www.imdb.com/title/tt0107290/?ref_=nv_sr_srsg_0_tt_8_nm_0_q_Jurassic%2520Park"
       },
+
      { id: "644a352ca33d5b41dd203afb",
        title: "Matrix",
        description: "A Hacker discovers he is living in a simulated reality",
        director: "Lana Wachowski",
-       imageurl: "http://example.com/matrix",
+       imageurl: "https://www.imdb.com/title/tt0133093/",
       },
      { id: "644a35e0a33d5b41dd203afc",
        title: "Goodfellas",
        description: "A young man rises through the ranks of the Mafia",
        director: "Martin Scorsese",
-       imageurl: "http://example.com/goodfellas",
+       imageurl: "https://www.imdb.com/title/tt0099685/?ref_=fn_al_tt_1",
       },
   ]);
 
