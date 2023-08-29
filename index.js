@@ -202,7 +202,7 @@ app.get('/movies/directors/:director', passport.authenticate('jwt', { session: f
 
 // Retrieve details of a movie director by name
 app.get('/directors/:directorName', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Movies.find({ 'director.name': req.params.directorName })
+  Movies.find({ 'director.Name': req.params.directorName })
     .then((movies) => {
       if (movies.length === 0) {
         return res.status(404).send('No movies found with director ' + req.params.directorName);
