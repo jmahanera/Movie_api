@@ -185,7 +185,7 @@ app.get('/movies/genre/:genre', passport.authenticate('jwt', { session: false })
 });
 
 // Get movies by a specific genre
-app.get('/genres/:genre', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get('/genre/:genre', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.find({ 'genre.name': req.params.genre })
     .then((movies) => {
       if (movies.length === 0) {
