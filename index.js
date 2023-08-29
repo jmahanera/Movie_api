@@ -200,16 +200,16 @@ app.get('/movies/directors/:director', passport.authenticate('jwt', { session: f
     });
 });
 
-// Retrieve details of a movie director by name
 app.get('/directors/:directorName', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Movies.find({ 'director.Name': req.params.directorName })
+  Movies.find({ 'director.name': req.params.directorName })
     .then((movies) => {
       if (movies.length === 0) {
-        return res.status(404).send('No movies found with director ' + req.params.directorName);
+        return res.status(404).send('Error: No movies found with director ' + req.params.directorName);
       } else {
         const directorDetails = {
-          name: director.name,
-          birthYear: director.birthYear
+          director: req.params.directorName,
+          birthYear: movies[0].director.birthYear, // Assuming birth year is stored in the first movie's director field
+          movies: movies.map(movie => movie.title)
         };
         res.status(200).json(directorDetails);
       }
@@ -219,6 +219,8 @@ app.get('/directors/:directorName', passport.authenticate('jwt', { session: fals
       res.status(500).send('Error: ' + err);
     });
 });
+
+
 
 
 
