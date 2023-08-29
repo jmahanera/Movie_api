@@ -340,6 +340,30 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }),
   }
 );
 
+// Delete a movie's imageUrl
+app.delete('/movies/:movieId/imageurl', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const movieId = req.params.movieId;
+
+    // Find the movie by ID and update the ImageUrl field to null
+    const updatedMovie = await Movies.findByIdAndUpdate(
+      movieId,
+      { $unset: { ImageUrl: 1 } },
+      { new: true }
+    );
+
+    if (!updatedMovie) {
+      return res.status(404).send('Error: Movie with ID ' + movieId + ' not found');
+    }
+
+    res.json(updatedMovie);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error: ' + error);
+  }
+});
+
+
 
 
 
