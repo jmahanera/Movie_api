@@ -208,7 +208,7 @@ app.get('/directors/:directorName', passport.authenticate('jwt', { session: fals
         return res.status(404).send('No movies found with director ' + req.params.directorName);
       } else {
         const directorDetails = {
-          name: movies[0].director.name,
+          name: director.name,
           birthYear: movies[0].director.birthYear
         };
         res.status(200).json(directorDetails);
