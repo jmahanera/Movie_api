@@ -209,7 +209,7 @@ app.get('/directors/:directorName', passport.authenticate('jwt', { session: fals
       } else {
         const directorDetails = {
           name: director.name,
-          birthYear: movies[0].director.birthYear
+          birthYear: director.birthYear
         };
         res.status(200).json(directorDetails);
       }
