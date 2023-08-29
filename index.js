@@ -200,6 +200,27 @@ app.get('/movies/directors/:director', passport.authenticate('jwt', { session: f
     });
 });
 
+// Display details of a movie director
+app.get('/directors/:directorName', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Movies.find({ 'director.name': req.params.directorName })
+    .then((movies) => {
+      if (movies.length === 0) {
+        return res.status(404).send('Error: No movies found with director ' + req.params.directorName);
+      } else {
+        const directorDetails = {
+          director: req.params.directorName,
+          movies: movies.map(movie => movie.title)
+        };
+        res.status(200).json(directorDetails);
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+
 
 //creating a new user
 app.post('/users', [
