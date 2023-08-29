@@ -280,6 +280,7 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }),
     check('username', 'Username contains non-alphanumeric characters - not allowed.').isAlphanumeric(),
     check('password', 'Password is required').notEmpty(),
     check('email', 'Email does not appear to be valid').isEmail()
+    
   ],
   async (req, res) => {
     let errors = validationResult(req);
@@ -314,24 +315,6 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }),
   }
 );
 
-// Update movie image URL
-app.put('/movies/:movieName/imageUrl', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  const { movieName } = req.params;
-  const { imageUrl } = req.body;
-
-  try {
-    const updatedMovie = await Movies.findByIdAndUpdate(movieName, { $set: { imageUrl } }, { new: true });
-
-    if (!updatedMovie) {
-      return res.status(404).send('Error: Movie with Name ' + movieId + ' not found.');
-    }
-
-    res.status(200).json(updatedMovie);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error: ' + error);
-  }
-});
 
 
 
