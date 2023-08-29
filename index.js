@@ -201,15 +201,24 @@ app.get('/movies/directors/:director', passport.authenticate('jwt', { session: f
 });
 
 // Display details of a movie director
+// Display details of a movie director
 app.get('/directors/:directorName', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Movies.find({ 'director.name': req.params.directorName })
-    .then((movies) => {
-      if (movies.length === 0) {
-        return res.status(404).send('Error: No movies found with director ' + req.params.directorName);
+  Directors.findOne({ name: req.params.directorName })
+    .populate('movies') // Assuming you have a movies field that references the movies
+    .then((director) => {
+      if (!director) {
+        return res.status(404).send('Error: Director not found');
       } else {
         const directorDetails = {
-          director: req.params.directorName,
-          movies: movies.map(movie => movie.title)
+          id: director._id,
+          name: director.name,
+          birthYear: director.birthYear,
+          movies: director.movies.map(movie => {
+            return {
+              id: movie._id,
+              title: movie.title
+            };
+          })
         };
         res.status(200).json(directorDetails);
       }
@@ -219,6 +228,7 @@ app.get('/directors/:directorName', passport.authenticate('jwt', { session: fals
       res.status(500).send('Error: ' + err);
     });
 });
+
 
 
 
