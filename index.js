@@ -402,6 +402,26 @@ app.delete('/movies/:movieId/imageurl', passport.authenticate('jwt', { session: 
   }
 });
 
+// Delete a movie by ID
+app.delete('/movies/:movieId', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const movieId = req.params.movieId;
+
+    // Find the movie by ID and delete it
+    const deletedMovie = await Movies.findByIdAndRemove(movieId);
+
+    if (!deletedMovie) {
+      return res.status(404).send('Error: Movie with ID ' + movieId + ' not found');
+    }
+
+    res.json({ message: 'Movie with ID ' + movieId + ' has been deleted' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error: ' + error);
+  }
+});
+
+
 
 
 
