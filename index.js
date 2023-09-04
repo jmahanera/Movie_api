@@ -170,13 +170,14 @@ app.get('/movies/:title', passport.authenticate('jwt', { session: false }), (req
 
 // diplaying movies by genre 
 app.get('/movies/genre/:genre', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Movies.find({ 'genre.name': req.params.genre })
-    .then((movies) => {
-      if (movies.length == 0) {
+  Movies.findOne({ 'genre.name': req.params.genre })
+    .then((movie) => {
+      return res.status(200).json(movie.genre);
+
+      /*if (movie == 0) {
         return res.status(404).send('Error: no movies found with this genre ' + req.params.genre + ' genre type.');
       } else {
-        res.status(200).json(movies);
-      }
+      }*/
     })
     .catch((err) => {
       console.error(err);
@@ -203,13 +204,14 @@ app.get('/genre/:genre', passport.authenticate('jwt', { session: false }), (req,
 
 // displaying movies by director
 app.get('/movies/directors/:director', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Movies.find({ 'director.name': req.params.director })
-    .then((movies) => {
-      if (movies.length == 0) {
-        return res.status(404).send('Error: no movies found with this directorName ' + req.params.director + ' name');
+  Movies.findOne({ 'director.name': req.params.director })
+    .then((movie) => {
+      return res.status(200).json(movie.director);
+  
+      /*if (movie) {
       } else {
-        res.status(200).json(movies);
-      }
+      return res.status(404).send('Error: no movies found with this directorName ' + req.params.director + ' name');
+      }*/
     })
     .catch((err) => {
       console.error(err);
