@@ -167,79 +167,90 @@ app.get('/movies/:title', passport.authenticate('jwt', { session: false }), (req
     });
 });
 
+app.get('/movies/genre/:genreName', passport.authenticate('jwt', { session: false }), (req, res) => {
+  const genreName = req.params.genreName;
 
-// diplaying movies by genre 
-app.get('/movies/genre/:genre', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Movies.findOne({ 'genre.name': req.params.genre })
-    .then((movie) => {
-      return res.status(200).json(movie.genre);
+  // Log the genreName you are searching for
+  console.log(`Searching for genre: ${genreName}`);
 
-      /*if (movie == 0) {
-        return res.status(404).send('Error: no movies found with this genre ' + req.params.genre + ' genre type.');
-      } else {
-      }*/
+  Movies.find({ 'genre.name': genreName })
+    .then((movies) => {
+      // Log the movies found (or not found)
+      console.log('Movies found:', movies);
+
+      if (movies.length === 0) {
+        return res.status(404).json({ error: `No movies found with the ${genreName} genre` });
+      }
+
+      // Extract genre information from the first movie (assuming all movies have the same genre)
+      const genreInfo = movies[0].genre;
+
+      if (!genreInfo) {
+        console.error('Genre information is missing in the movie:', movies[0]);
+        return res.status(500).json({ error: 'Genre information missing in the movie' });
+      }
+
+      // Send the genre information back to Postman
+      console.log('Sending genre information to Postman:', genreInfo);
+      res.status(200).json(genreInfo);
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).send('Error: ' + err);
+      res.status(500).json({ error: 'Internal server error' });
     });
 });
 
-// Get movies by a specific genre
-app.get('/genre/:genre', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Movies.find({ 'genre.name': req.params.genre })
+
+
+/*app.get('/movies/genre/:genreName', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Movies.find({ 'genre.name': req.params.genreName })
     .then((movies) => {
       if (movies.length === 0) {
-        return res.status(404).send('Error: No movies found with genre ' + req.params.genre);
+        return res.status(404).send('Error: no movies found with this genre ' + req.params.genreName + ' genre type.');
       } else {
-        res.status(200).json(movies);
+        return res.status(200).json(movies);
       }
     })
     .catch((err) => {
       console.error(err);
       res.status(500).send('Error: ' + err);
     });
-});
-
-
-// displaying movies by director
-app.get('/movies/directors/:director', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Movies.findOne({ 'director.name': req.params.director })
-    .then((movie) => {
-      return res.status(200).json(movie.director);
-  
-      /*if (movie) {
-      } else {
-      return res.status(404).send('Error: no movies found with this directorName ' + req.params.director + ' name');
-      }*/
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
-
-app.get('/directors/:directorName', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Movies.find({ 'director.name': req.params.directorName })
-    .then((movies) => {
-      if (movies.length === 0) {
-        return res.status(404).send('Error: No movies found with director ' + req.params.directorName);
-      } else {
-        const directorDetails = {
-          director: req.params.directorName,
-          movies: movies.map(movie => movie.title)
-        };
-        res.status(200).json(directorDetails);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
-});
+});*/
 
 
 
+ app.get('/movies/directors/:directorName', passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    const directorName = req.params.directorName;
+    
+    // Log the directorName you are searching for
+    console.log(`Searching for director: ${directorName}`);
+
+    Movies.findOne({ 'director.name': directorName })
+      .select('director') // Select only the director subdocument
+      .then((movie) => {
+        // Log the movie found (or not found)
+        console.log('Movie found:', movie);
+
+        if (!movie) {
+          return res.status(404).json({ error: 'No director found with this name' });
+        }
+
+        if (!movie.director) {
+          console.error('Director information is missing in the movie:', movie);
+          return res.status(500).json({ error: 'Director information missing in the movie' });
+        }
+
+        // Send the director information back to Postman
+        console.log('Sending director information to Postman:', movie.director);
+        res.status(200).json(movie.director);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+      });
+  }
+);
 
 
 //creating a new user
