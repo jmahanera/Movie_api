@@ -345,29 +345,89 @@ app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { sess
 });
 
 
-// Update movie image URL
+// Add or update movie image URL
 app.put('/movies/:movieId/imageurl', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
+    const { movieId } = req.params;
+    const { imageUrl } = req.body;
+
+    // Check if the movie with the given ID exists
+    const movie = await movie.findById(movieId);
+
+    if (!movie) {
+      return res.status(404).json({ message: 'Movie not found' });
+    }
+
+    // Validate that imageUrl is provided
+    if (!imageUrl) {
+      return res.status(400).json({ error: 'imageUrl is required' });
+    }
+
+    // Update the imageUrl property
+    movie.imageUrl = imageUrl;
+
+    // Save the updated movie
+    const updatedMovie = await movie.save();
+
+    return res.status(200).json({ message: 'ImageUrl added/updated successfully', movie: updatedMovie });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
+/*app.put('/movies/:movieId/updateImageUrl', async (req, res) => {
+  try {
+    const { movieId } = req.params;
+    const { imageUrl } = req.body;
+
+    // Check if the movie with the given ID exists
+    const movie = await movie.findById(movieId);
+
+    if (!movie) {
+      return res.status(404).json({ message: 'Movie not found' });
+    }
+
+    // Update the imageUrl property
+    movie.imageUrl = imageUrl;
+
+    // Save the updated movie
+    await movie.save();
+
+    return res.status(200).json({ message: 'ImageUrl updated successfully', movie });
+  } catch (error) {
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});*/
+
+
+
+// Delete movie image URL
+app.delete('/movies/:movieId/imageurl', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
     const movieId = req.params.movieId;
-    const newImageUrl = req.body.imageUrl;
 
-    // Find the movie by ID and update the ImageUrl field
-    const updatedMovie = await Movies.findByIdAndUpdate(
-      movieId,
-      { $set: { ImageUrl: newImageUrl } },
-      { new: true }
-    );
+    // Find the movie by ID
+    const movie = await Movies.findById(movieId);
 
-    if (!updatedMovie) {
+    if (!movie) {
       return res.status(404).send('Error: Movie with ID ' + movieId + ' not found');
     }
 
-    res.json(updatedMovie);
+    // Remove the ImageUrl field from the movie
+    movie.imageUrl = undefined;
+    await movie.save();
+
+    res.json(movie);
   } catch (error) {
     console.error(error);
     res.status(500).send('Error: ' + error);
   }
 });
+
+
 
 
 //updating a user's information
