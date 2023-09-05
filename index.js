@@ -346,10 +346,10 @@ app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { sess
 
 
 // Add or update movie image URL
-app.put('/movies/:movieId/imageurl', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.put('/movies/:movieId/imageUrl', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
-    const { movieId } = req.params;
-    const { imageUrl } = req.body;
+    const movieId = req.params.movieId;
+    const imageUrl = req.body.imageUrl; // Assuming you send imageUrl in the request body
 
     // Check if the movie with the given ID exists
     const movie = await movie.findById(movieId);
@@ -364,7 +364,7 @@ app.put('/movies/:movieId/imageurl', passport.authenticate('jwt', { session: fal
     }
 
     // Update the imageUrl property
-    movie.imageUrl = imageUrl;
+    movie.imageUrl = imageUrl; // Use uppercase 'imageUrl' to match your schema
 
     // Save the updated movie
     const updatedMovie = await movie.save();
@@ -375,6 +375,7 @@ app.put('/movies/:movieId/imageurl', passport.authenticate('jwt', { session: fal
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 
