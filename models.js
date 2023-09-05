@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const movieSchema = new mongoose.Schema({
+/*const movieSchema = new mongoose.Schema({
   Title: { type: String, required: true },
   Description: { type: String, required: true },
   genre: {
@@ -17,9 +17,27 @@ const movieSchema = new mongoose.Schema({
   id: String,
   title: String,
   description: String,
-  ImageUrl: String,
+  imageurl: String,
   Featured: Boolean
+});*/
+
+const movieSchema = new mongoose.Schema({
+  title: { type: String, required: true }, // Updated to 'title' and marked as required
+  description: { type: String, required: true }, // Updated to 'description' and marked as required
+  genre: {
+    id: String,
+    name: String
+  },
+  director: {
+    id: String,
+    name: String,
+    birthyear: String,
+  },
+  actors: [String],
+  imageurl: String,
+  featured: Boolean
 });
+
 
 const Movie = mongoose.model('Movie', movieSchema);
 
