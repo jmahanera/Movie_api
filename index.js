@@ -372,7 +372,7 @@ app.put('/movies/:movieId/imageUrl', passport.authenticate('jwt', { session: fal
     return res.status(200).json({ message: 'ImageUrl added/updated successfully', movie: updatedMovie });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'ImageUrl cannot be updated. Check code once again' });
   }
 });
 
