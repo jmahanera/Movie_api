@@ -200,6 +200,28 @@ app.get('/movies/genre/:genreName', passport.authenticate('jwt', { session: fals
     });
 });
 
+app.get('/movies/genre/:genreName/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
+  const genreName = req.params.genreName;
+  // Log the genreName you are searching for
+  console.log(`Searching for movies with genre: ${genreName}`);
+
+  Movies.find({ 'genre.name': genreName })
+    .then((movies) => {
+      // Log the movies found (or not found)
+      console.log('Movies found:', movies);
+
+      if (movies.length === 0) {
+        return res.status(404).json({ error: `No movies found with the ${genreName} genre` });
+      }
+
+      // Send the movies back to the client
+      res.status(200).json(movies);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({ error: 'Internal server error' });
+    });
+});
 
 
 /*app.get('/movies/genre/:genreName', passport.authenticate('jwt', { session: false }), (req, res) => {
