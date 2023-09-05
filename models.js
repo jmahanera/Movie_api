@@ -22,8 +22,7 @@ const bcrypt = require('bcrypt');
 });*/
 
 const movieSchema = new mongoose.Schema({
-  title: { type: String, required: true }, // Updated to 'title' and marked as required
-  description: { type: String, required: true }, // Updated to 'description' and marked as required
+  
   genre: {
     id: String,
     name: String
@@ -33,8 +32,11 @@ const movieSchema = new mongoose.Schema({
     name: String,
     birthyear: String,
   },
-  actors: [String],
-  imageurl: String,
+  actors: [],
+  id: String,
+  title:  String,  // Updated to 'title' and marked as required
+  description: String, // Updated to 'description' and marked as required
+  imageUrl: String,
   featured: Boolean
 });
 
