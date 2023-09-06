@@ -31,6 +31,7 @@ const movieSchema = new mongoose.Schema({
     id: String,
     name: String,
     birthyear: String,
+    dorector_bio: String,
   },
   actors: [],
   id: String,
