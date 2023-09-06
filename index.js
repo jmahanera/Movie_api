@@ -309,6 +309,7 @@ app.post('/users', [
 
 
 
+
 // Allows users to save movies to their favorites!
 app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndUpdate(
@@ -348,35 +349,6 @@ app.put('/movies/:movieId/image', passport.authenticate('jwt', { session: false 
     res.status(500).send('Error: ' + error);
   }
 });
-
-
-
-
-
-/*app.put('/movies/:movieId/updateImageUrl', async (req, res) => {
-  try {
-    const { movieId } = req.params;
-    const { imageUrl } = req.body;
-
-    // Check if the movie with the given ID exists
-    const movie = await movie.findById(movieId);
-
-    if (!movie) {
-      return res.status(404).json({ message: 'Movie not found' });
-    }
-
-    // Update the imageUrl property
-    movie.imageUrl = imageUrl;
-
-    // Save the updated movie
-    await movie.save();
-
-    return res.status(200).json({ message: 'ImageUrl updated successfully', movie });
-  } catch (error) {
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-});*/
-
 
 
 // Delete movie image URL
@@ -492,8 +464,6 @@ app.delete('/movies/:movieId', passport.authenticate('jwt', { session: false }),
 });
 
 
-
-
 //removing an existing user
 app.delete('/users/:username', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndRemove({ username: req.params.username })
@@ -509,6 +479,29 @@ app.delete('/users/:username', passport.authenticate('jwt', { session: false }),
       res.status(500).send('Error: ' + err);
     });
 });
+//Allow users to delete 
+app.delete('/users/:username/movies/:movieId', passport.authenticate('jwt', { session: false }), (req, res) => {
+  const username = req.params.username;
+  const movieId = req.params.movieId;
+
+  Users.findOneAndUpdate(
+    { username: username },
+    { $pull: { FavoriteMovies: movieId } },
+    { new: true }
+  )
+    .then((updatedUser) => {
+      if (!updatedUser) {
+        return res.status(404).send("Error: User doesn't exist");
+      } else {
+        res.json(updatedUser);
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
+});
+
 
 
 //error-handling middleware function
