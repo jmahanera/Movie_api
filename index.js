@@ -111,7 +111,7 @@ passport.use(
 
 // This sets up a message once the user goes to the home page of the website.
 app.get('/', (_request, response) => {
-  response.send('Welcome to mymoviesDB Operating under the brand name MOVIENOSTALGIA!');
+  response.send('Welcome to mymoviesDB Operating under the brand name MOVIENOSTALGIA!!');
 });
 
 
@@ -126,7 +126,7 @@ app.get('/users', passport.authenticate('jwt', { session: false }), (_request, r
       res.status(500).send('Error: ' + err);
     });
 });
-
+     
 // display a single user
 app.get('/users/:username', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOne({ username: req.params.username })
