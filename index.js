@@ -345,36 +345,25 @@ app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { sess
 });
 
 
-// Add or update movie image URL
-app.put('/movies/:movieId/imageUrl', passport.authenticate('jwt', { session: false }), async (req, res) => {
+// Update movie image URL
+app.put('/movies/:movieId/image', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const { movieId } = req.params;
+  const { imageUrl } = req.body;
+
   try {
-    const movieId = req.params.movieId;
-    const imageUrl = req.body.imageUrl; // Assuming you send imageUrl in the request body
+    const updatedMovie = await Movies.findByIdAndUpdate(movieId, { $set: { imageUrl } }, { new: true });
 
-    // Check if the movie with the given ID exists
-    const movie = await movie.findById(movieId);
-
-    if (!movie) {
-      return res.status(404).json({ message: 'Movie not found' });
+    if (!updatedMovie) {
+      return res.status(404).send('Error: Movie with ID ' + movieId + ' not found.');
     }
 
-    // Validate that imageUrl is provided
-    if (!imageUrl) {
-      return res.status(400).json({ error: 'imageUrl is required' });
-    }
-
-    // Update the imageUrl property
-    movie.imageUrl = imageUrl; // Use uppercase 'imageUrl' to match your schema
-
-    // Save the updated movie
-    const updatedMovie = await movie.save();
-
-    return res.status(200).json({ message: 'ImageUrl added/updated successfully', movie: updatedMovie });
+    res.status(200).json(updatedMovie);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'ImageUrl cannot be updated. Check code once again' });
+    res.status(500).send('Error: ' + error);
   }
 });
+
 
 
 
