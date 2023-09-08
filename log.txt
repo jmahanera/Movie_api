@@ -1688,3 +1688,7 @@
 ::1 - - [06/Sep/2023:16:25:24 +0000] "DELETE /users/seedy/movies/644a3284a33d5b41dd203af8 HTTP/1.1" 404 185 "-" "PostmanRuntime/7.32.3"
 ::1 - - [06/Sep/2023:16:26:43 +0000] "DELETE /users/seedy/movies/644a3284a33d5b41dd203af8 HTTP/1.1" 200 236 "-" "PostmanRuntime/7.32.3"
 ::1 - - [06/Sep/2023:16:26:43 +0000] "DELETE /users/seedy/movies/644a3284a33d5b41dd203af8 HTTP/1.1" 200 236 "-" "PostmanRuntime/7.32.3"
+::1 - - [08/Sep/2023:07:07:17 +0000] "GET /movies/genre/Thriller HTTP/1.1" 500 49 "-" "PostmanRuntime/7.32.3"
+::1 - - [08/Sep/2023:07:07:17 +0000] "GET /movies/genre/Thriller HTTP/1.1" 500 49 "-" "PostmanRuntime/7.32.3"
+::1 - - [08/Sep/2023:07:08:02 +0000] "GET /movies HTTP/1.1" 500 49 "-" "PostmanRuntime/7.32.3"
+::1 - - [08/Sep/2023:07:08:02 +0000] "GET /movies HTTP/1.1" 500 49 "-" "PostmanRuntime/7.32.3"
