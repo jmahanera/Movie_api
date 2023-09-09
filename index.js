@@ -70,7 +70,7 @@ const hashPassword = async (password) => {
 
 
 const cors = require('cors');
-let allowedOrigins = ['https://movienostalgie.herokuapp.com', 'http://localhost:8080'];
+let allowedOrigins = ['https://movienostalgia.herokuapp.com', 'http://localhost:8080'];
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -121,6 +121,8 @@ passport.use(
       .catch((err) => done(err));
   })
 );
+
+
 
 // This sets up a message once the user goes to the home page of the website.
 app.get('/', (_request, response) => {
@@ -343,6 +345,84 @@ app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { sess
     });
 });
 
+// Create a new movie
+app.post('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    // Extract movie data from the request body
+    const { title, description, genre, director, actors, imageUrl, featured } = req.body;
+
+    // Create a new movie object with the ID (assuming you're using MongoDB's default ObjectId)
+    const newMovie = new Movies({
+      title,
+      description,
+      genre,
+      director,
+      actors,
+      imageUrl,
+      featured,
+    });
+
+    // Save the movie to the database
+    const savedMovie = await newMovie.save();
+
+    // Send a response to the client
+    res.status(201).json(savedMovie);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error: ' + error);
+  }
+});
+
+// Create a new director and associated movies
+app.post('/directors', passport.authenticate('jwt', { session: false }), (req, res) => {
+  // Extract director data from the request body
+  const { name, birthYear, bio, movies } = req.body;
+
+  // Create an array to store the movie IDs associated with the director
+  const movieIds = [];
+
+  // Loop through the list of movie titles and find or create them in the database
+  Promise.all(
+    movies.map(async (movieTitle) => {
+      const existingMovie = await Movies.findOne({ title: movieTitle });
+
+      if (existingMovie) {
+        movieIds.push(existingMovie._id);
+      } else {
+        const newMovie = new Movies({ title: movieTitle });
+        const savedMovie = await newMovie.save();
+        movieIds.push(savedMovie._id);
+      }
+    })
+  )
+    .then(() => {
+      // Create a new director object with the associated movie IDs
+      const newDirector = new Directors({
+        name,
+        birthYear,
+        bio,
+        movies: movieIds,
+      });
+
+      // Save the director to the database
+      return newDirector.save();
+    })
+    .then((director) => {
+      // Log the newly created director to the console
+      console.log('New Director Created:');
+      console.log(JSON.stringify(director, null, 2)); // Pretty-print JSON
+
+      // Send a response to the client
+      res.status(201).json(director);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+
+
 
 // Update movie image URL
 app.put('/movies/:movieId/image', passport.authenticate('jwt', { session: false }), async (req, res) => {
@@ -524,7 +604,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start the server
-const port = process.env.PORT || 8081 
+const port = process.env.PORT || 8080   
 
 app.listen(port, () => {
   console.log('Server is running on port ' + port);
