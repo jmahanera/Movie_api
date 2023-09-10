@@ -25,7 +25,7 @@ const Users = Models.User;
 //
 
 // Connect to MongoDB
-/*const uri = 'mongodb+srv://julayamu:Myproject23@moviecluster.uviwjhs.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replaced with my MongoDB connecmongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnifiedTopology: true })
+const uri = 'mongodb+srv://julayamu:Myproject23@moviecluster.uviwjhs.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replaced with my MongoDB connecmongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnifiedTopology: true })
 mongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnifiedTopology: true })
 //mongoose.connect( "mongodb://127.0.0.1:27017/mymoviesDB",{ useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
@@ -33,10 +33,10 @@ mongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnif
   })
   .catch((error) => {
     console.error('Error connecting to database:', error);
-  });*/
+  });
 
   
-  mongoose.connect( process.env.movies_uri, { useNewUrlParser: true, useUnifiedTopology: true });*/
+  //mongoose.connect( process.env.movies_uri, { useNewUrlParser: true, useUnifiedTopology: true });*/
 
 
 /*const uri = process.env.MOVIES_URI || 'mongodb+srv://julayamu:Myproject23@moviecluster.uviwjhs.mongodb.net/mymoviesDB?retryWrites=true&w=majority';
