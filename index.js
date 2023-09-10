@@ -70,7 +70,7 @@ const hashPassword = async (password) => {
 
 
 const cors = require('cors');
-let allowedOrigins = ['https://movienostalgia.herokuapp.com', 'http://localhost:8080'];
+let allowedOrigins = ['http://localhost:8080','https://movienostalgia.herokuapp.com'];
 
 app.use(cors({
   origin: (origin, callback) => {
