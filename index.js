@@ -70,7 +70,7 @@ const hashPassword = async (password) => {
 
 
 const cors = require('cors');
-let allowedOrigins = ['http://localhost:8080','https://movienostalgia.herokuapp.com'];
+let allowedOrigins = ['http://localhost:8080','https://primemovies.herokuapp.com'];
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -126,7 +126,7 @@ passport.use(
 
 // This sets up a message once the user goes to the home page of the website.
 app.get('/', (_request, response) => {
-  response.send('Welcome to mymoviesDB Operating under the brand name PRIMEMOVIES!!');
+  response.send('Welcome to mymoviesDB Operating under the brand name PRIMEMOVIES!!!');
 });
 
 
