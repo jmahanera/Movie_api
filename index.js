@@ -427,6 +427,10 @@ app.put('/directors/:directorName/bio', passport.authenticate('jwt', { session: 
   const directorName = req.params.directorName;
   const newBio = req.body.newBio;
 
+  app.put('/directors/:directorName/bio', passport.authenticate('jwt', { session: false }), (req, res) => {
+  const directorName = req.params.directorName;
+  const newBio = req.body.newBio;
+
   // Find the director by name and update the bio
   Directors.findOneAndUpdate(
     { name: directorName },
@@ -444,7 +448,6 @@ app.put('/directors/:directorName/bio', passport.authenticate('jwt', { session: 
       res.status(500).json({ error: 'Internal server error' });
     });
 });
-
 
 
 // Update movie title
