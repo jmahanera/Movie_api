@@ -431,7 +431,7 @@ app.post('/directors/directorName', passport.authenticate('jwt', { session: fals
   // Find the director by name and update the bio
   Directors.findOneAndUpdate(
     { name: directorName },
-    { $set: { director_bio: newBio } },
+    { $set: { 'director.director_bio': newBio } }, // Update the path to director's bio
     { new: true }
   )
     .then((director) => {
@@ -445,6 +445,7 @@ app.post('/directors/directorName', passport.authenticate('jwt', { session: fals
       res.status(500).json({ error: 'Internal server error' });
     });
 });
+
 
 
 // Update movie title
