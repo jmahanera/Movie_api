@@ -422,6 +422,30 @@ app.post('/directors/directorName', passport.authenticate('jwt', { session: fals
 });
 
 
+// Update movie title
+app.put('/movies/:movieId/title', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const movieId = req.params.movieId;
+    const newTitle = req.body.newTitle;
+
+    // Check if the movie exists
+    const existingMovie = await Movies.findById(movieId);
+
+    if (!existingMovie) {
+      return res.status(404).send('Error: Movie with ID ' + movieId + ' not found.');
+    }
+
+    // Update the movie's title
+    existingMovie.title = newTitle;
+    const updatedMovie = await existingMovie.save();
+
+    res.status(200).json(updatedMovie);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error: ' + error);
+  }
+});
+
 
 
 // Update movie image URL
