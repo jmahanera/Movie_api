@@ -8,19 +8,19 @@ export const MainView = () => {
       title: "Jurassic Park",
       description: "A group of people visit a remote island where cloned dinosaurs have been unleashed, leading to a fight for survival.",
       director: "James Cameron",
-      imageurl: "https://eskipaper.com/images/jurassic-park-wallpaper-3.jpg"
+      imageurl: "https://www.themoviedb.org/t/p/original/b1xCNnyrPebIc7EWNZIa6jhb1Ww.jpg"
     },
     { id: "64fc9aaf191da30c43fb6965",
       title: "Titanic",
       description: "A seventeen-year-old aristocrat falls in love with a kind but poor artist aboard the luxurious, ill-fated R.M.S. Titanic.",
       director: "The Wachowskis",
-      imageurl: "https://eskipaper.com/images/titanic-movie-1.jpg",
+      imageurl: "https://www.themoviedb.org/t/p/original/8MFJ4aAr85B5lVCecxGSd9iX6FX.jpg",
     },
     { id: "64fc9b13191da30c43fb6968",
       title: "The Matrix",
       description: "A computer programmer discovers that reality as he knows it is a simulation created by machines to subjugate humanity.",
       director: "Robert Zemeckis",
-      imageurl: "https://eskipaper.com/images/neo-matrix-1.jpg",
+      imageurl: "https://www.themoviedb.org/t/p/original/dXNAPwY7VrqMAo51EKhhCJfaGb5.jpg",
     },
   ]);
 
