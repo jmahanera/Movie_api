@@ -422,6 +422,31 @@ app.post('/directors/directorName', passport.authenticate('jwt', { session: fals
 });
 
 
+// Update director bio
+app.put('/directors/:directorName/bio', passport.authenticate('jwt', { session: false }), (req, res) => {
+  const directorName = req.params.directorName;
+  const newBio = req.body.newBio;
+
+  // Find the director by name and update the bio
+  Directors.findOneAndUpdate(
+    { name: directorName },
+    { $set: { bio: newBio } },
+    { new: true }
+  )
+    .then((director) => {
+      if (!director) {
+        return res.status(404).json({ error: 'Director not found' });
+      }
+      res.status(200).json(director);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({ error: 'Internal server error' });
+    });
+});
+
+
+
 // Update movie title
 app.put('/movies/:movieId/title', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
