@@ -430,7 +430,7 @@ app.put('/directors/:directorName/bio', passport.authenticate('jwt', { session: 
   // Find the director by name and update the bio
   Directors.findOneAndUpdate(
     { name: directorName },
-    { $set: { bio: newBio } },
+    { $set: { director_bio: newBio } },
     { new: true }
   )
     .then((director) => {
