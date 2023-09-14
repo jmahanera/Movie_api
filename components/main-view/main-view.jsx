@@ -4,23 +4,23 @@ import { MovieView } from "../movie-view/movie-view";
 
 export const MainView = () => {
   const [movies, setMovies] = useState([
-    { id: "644a38baa33d5b41dd203aff",
+    { id: "64fc97da191da30c43fb6956",
       title: "Jurassic Park",
-      description: "A theme park with cloned dinosaurs goes wrong",
-      director: "Steven Spielberg",
-      imageurl: "https://www.imdb.com/title/tt0107290/?ref_=nv_sr_srsg_0_tt_8_nm_0_q_Jurassic%2520Park"
+      description: "A group of people visit a remote island where cloned dinosaurs have been unleashed, leading to a fight for survival.",
+      director: "James Cameron",
+      imageurl: "https://www.imdb.com/title/tt0163025/?ref_=fn_al_tt_2"
     },
-    { id: "644a352ca33d5b41dd203afb",
-      title: "Matrix",
-      description: "A Hacker discovers he is living in a simulated reality",
-      director: "Lana Wachowski",
-      imageurl: "https://www.imdb.com/title/tt0133093/",
+    { id: "64fc9aaf191da30c43fb6965",
+      title: "Titanic",
+      description: "A seventeen-year-old aristocrat falls in love with a kind but poor artist aboard the luxurious, ill-fated R.M.S. Titanic.",
+      director: "The Wachowskis",
+      imageurl: "https://www.imdb.com/title/tt0120338/mediaviewer/rm2647458304/?ref_=tt_ov_i",
     },
-    { id: "644a35e0a33d5b41dd203afc",
-      title: "Goodfellas",
-      description: "A young man rises through the ranks of the Mafia",
-      director: "Martin Scorsese",
-      imageurl: "https://www.imdb.com/title/tt0099685/?ref_=fn_al_tt_1",
+    { id: "64fc9b13191da30c43fb6968",
+      title: "The Matrix",
+      description: "A computer programmer discovers that reality as he knows it is a simulation created by machines to subjugate humanity.",
+      director: "Robert Zemeckis",
+      imageurl: "https://www.imdb.com/title/tt0133093/mediaviewer/rm525547776/?ref_=tt_ov_i",
     },
   ]);
 
