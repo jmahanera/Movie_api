@@ -423,9 +423,6 @@ app.post('/directors/directorName', passport.authenticate('jwt', { session: fals
 
 
 // Update director bio
-app.put('/directors/:directorName/bio', passport.authenticate('jwt', { session: false }), (req, res) => {
-  const directorName = req.params.directorName;
-  const newBio = req.body.newBio;
 
   app.put('/directors/:directorName/bio', passport.authenticate('jwt', { session: false }), (req, res) => {
   const directorName = req.params.directorName;
@@ -660,6 +657,3 @@ const port = process.env.PORT || 8080
 app.listen(port, () => {
   console.log('Server is running on port ' + port);
 });
-
-
-
