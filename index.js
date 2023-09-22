@@ -15,7 +15,7 @@ const { body } = require('express-validator');
 const uuid = require('uuid');
 
 // Import Mongoose and models
-const mongoose = require('mongoose');
+const mongoose = require('mongoose');  
 const Models = require('./models.js');
 
 const Movies = Models.Movie;
@@ -159,7 +159,7 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), (r
 });
 
 // Gets a JSON object of all the current movies on the server
-app.get('/movies', passport.authenticate('jwt', { session: false }), (_req, res) => {
+app.get('/movies', (_req, res) => {
   Movies.find()
     .then((movies) => {
       res.status(200).json(movies);
