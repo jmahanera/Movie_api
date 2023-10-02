@@ -70,7 +70,7 @@ const hashPassword = async (password) => {
 
 
 const cors = require('cors');
-let allowedOrigins = ['http://localhost:1234', 'http://localhost:8080', 'https://primemovies-39075872fbeb.herokuapp.com/movies',];
+let allowedOrigins = ['http://localhost:1234', 'http://localhost:8080', 'https://primemovies-39075872fbeb.herokuapp.com/'];
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -159,7 +159,7 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), (r
 });
 
 // Gets a JSON object of all the current movies on the server
-app.get('/movies', (_req, res) => {
+app.get('/movies', passport.authenticate('jwt', { session: false }), (_req, res) => {
   Movies.find()
     .then((movies) => {
       res.status(200).json(movies);
