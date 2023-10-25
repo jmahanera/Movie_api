@@ -159,30 +159,24 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), (r
 });
 
 // Get a user's favorite movies
-app.get('/users/:username/movies/FavoriteMovies', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get('/users/:username/favorite-movies', passport.authenticate('jwt', { session: false }), (req, res) => {
   const username = req.params.username;
 
   Users.findOne({ username: username })
+    .populate('favoriteMovies') // Make sure to use the correct field name
     .then((user) => {
       if (!user) {
         return res.status(404).send("Error: User doesn't exist");
       }
 
-      // Find the favorite movies by their IDs
-      Movies.find({ _id: { $in: user.FavoriteMovies } })
-        .then((favoriteMovies) => {
-          res.json(favoriteMovies);
-        })
-        .catch((error) => {
-          console.error(error);
-          res.status(500).send('Error: ' + error);
-        });
+      res.json(user.favoriteMovies);
     })
     .catch((error) => {
       console.error(error);
       res.status(500).send('Error: ' + error);
     });
 });
+
 
 
 
