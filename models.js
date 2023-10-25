@@ -26,11 +26,16 @@ const movieSchema = new mongoose.Schema({
 const Movie = mongoose.model('Movie', movieSchema);
 
 const userSchema = new mongoose.Schema({
+  favoriteMovies: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Movie',
+    },
+  ],
   username: { type: String, required: true },
   password: { type: String, required: true },
   email: { type: String, required: true },
   birthDate: Date,
-  FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Movie" }],
 
 });
 
