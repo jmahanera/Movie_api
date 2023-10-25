@@ -70,7 +70,7 @@ const hashPassword = async (password) => {
 
 
 const cors = require('cors');
-let allowedOrigins = ['http://localhost:1234', 'http://localhost:8080', 'https://primemovies-39075872fbeb.herokuapp.com'];
+let allowedOrigins = ['http://localhost:1234', 'http://localhost:8080', 'https://primemovies-39075872fbeb.herokuapp.com/login'];
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -157,6 +157,34 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), (r
       res.status(500).send('Error: ' + err);
     });
 });
+
+// Get a user's favorite movies
+app.get('/users/:username/favorite-movies', passport.authenticate('jwt', { session: false }), (req, res) => {
+  const username = req.params.username;
+
+  Users.findOne({ username: username })
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send("Error: User doesn't exist");
+      }
+
+      // Find the favorite movies by their IDs
+      Movies.find({ _id: { $in: user.FavoriteMovies } })
+        .then((favoriteMovies) => {
+          res.json(favoriteMovies);
+        })
+        .catch((error) => {
+          console.error(error);
+          res.status(500).send('Error: ' + error);
+        });
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
+});
+
+
 
 // Gets a JSON object of all the current movies on the server
 app.get('/movies', passport.authenticate('jwt', { session: false }), (_req, res) => {
