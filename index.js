@@ -163,19 +163,21 @@ app.get('/users/:username/movies/favoriteMovies', passport.authenticate('jwt', {
   const username = req.params.username;
 
   Users.findOne({ username: username })
-    .populate('favoriteMovies') // Make sure to use the correct field name
+    .populate('favoriteMovies')
     .then((user) => {
       if (!user) {
         return res.status(404).send("Error: User doesn't exist");
+      } else {
+        // If the user is found, return the favorite movies
+        res.json(user.favoriteMovies);
       }
-
-      res.json(user.favoriteMovies);
     })
     .catch((error) => {
       console.error(error);
       res.status(500).send('Error: ' + error);
     });
 });
+
 
 
 
