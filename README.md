@@ -29,14 +29,14 @@ To run the Movie API locally, follow these steps:
 
 •	Node.js (with npm)
 •	MongoDB
-Installation
-1.	Clone the repository:
+## Installation
+## 1.	Clone the repository:
 git clone https://github.com/jmahanera/Movie_api.gitgit clone https://github.com/jmahanera/Movie_api.git
-1.	Navigate to the project folder:
+## 1.	Navigate to the project folder:
 cd Movie_api
-1.	Install dependencies:
+## 1.	Install dependencies:
 npm install
-1.	Set up environment variables:
+## 1.	Set up environment variables:
 Create a .env file in the root folder and add the following:
 MOVIES_URI=const uri = 'mongodb+srv://jula:Myaccount1@moviecluster.1wliibn.mongodb.net/mymoviesDB?retryWrites=true&w=majority'; // Replaced with my MongoDB connection string
 mongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -49,8 +49,8 @@ mongoose.connect(process.env.MOVIES_URI || uri, { useNewUrlParser: true, useUnif
 JWT_SECRET=your_jwt_secret
 
 ## 1.	Start the server:
-npm start
-Usage
+**1. npm start**
+**2. Usage**
 Once the server is running, the Movie API will be accessible at http://localhost:3000. The API provides various endpoints to interact with movie data, including browsing movies, adding movies to favorites, and searching for movies by different criteria.
 
 
