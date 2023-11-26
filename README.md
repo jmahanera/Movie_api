@@ -50,7 +50,8 @@ JWT_SECRET=your_jwt_secret
 
 ## 1.	Start the server:
 **1. npm start**
-**2. Usage**
+## Usage
+
 Once the server is running, the Movie API will be accessible at http://localhost:3000. The API provides various endpoints to interact with movie data, including browsing movies, adding movies to favorites, and searching for movies by different criteria.
 
 
