@@ -70,7 +70,8 @@ const hashPassword = async (password) => {
 
 
 const cors = require('cors');
-let allowedOrigins = ['http://localhost:1234', 'http://localhost:8080', 'https://primemovies-39075872fbeb.herokuapp.com/login'];
+let allowedOrigins = [ '*', 'http://localhost:1234', 'http://localhost:8080',
+  'https://primemovies-39075872fbeb.herokuapp.com/login', 'http://localhost:4200'];
 
 app.use(cors({
   origin: (origin, callback) => {
