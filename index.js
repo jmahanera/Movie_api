@@ -207,6 +207,27 @@ app.get('/movies/:title', passport.authenticate('jwt', { session: false }), (req
     });
 });
 
+// Get a user's favorite movie by movie ID
+app.get('/users/:username/movies/:movieId', passport.authenticate('jwt', { session: false }), (req, res) => {
+  const username = req.params.username;
+  const movieId = req.params.movieId;
+
+  Users.findOne({ username: username, FavoriteMovies: movieId })
+    .populate('FavoriteMovies')
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send("Error: User doesn't exist or movie not found in favorites");
+      } else {
+        res.json(user.FavoriteMovies);
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
+});
+
+
 //Get a movie using genreName
 app.get('/movies/genre/:genreName', passport.authenticate('jwt', { session: false }), (req, res) => {
   const genreName = req.params.genreName;
