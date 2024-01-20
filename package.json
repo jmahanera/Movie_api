@@ -30,7 +30,7 @@
     "mongodb": "^5.8.1",
     "mongoose": "^7.3.2",
     "morgan": "^1.10.0",
-    "newman": "^4.5.7",
+    "newman": "^5.1.0",
     "node": "^20.3.1",
     "node-uuid": "^1.4.8",
     "node.js": "^0.0.1-security",
