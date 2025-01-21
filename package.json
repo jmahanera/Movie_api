@@ -28,7 +28,7 @@
     "lodash": "^4.17.21",
     "mongod": "^2.0.0",
     "mongodb": "^5.8.1",
-    "mongoose": "^7.3.2",
+    "mongoose": "^7.8.4",
     "morgan": "^1.10.0",
     "newman": "^4.5.7",
     "node": "^20.3.1",
