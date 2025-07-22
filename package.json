@@ -29,7 +29,7 @@
     "mongod": "^2.0.0",
     "mongodb": "^5.8.1",
     "mongoose": "^7.3.2",
-    "morgan": "^1.10.0",
+    "morgan": "^1.10.1",
     "newman": "^4.5.7",
     "node": "^20.3.1",
     "node-uuid": "^1.4.8",
